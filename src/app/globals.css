@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+:root {
+  /* Brand */
+  --color-steel: #1e6489;
+  --color-steel-dark: #164f6c;
+  --color-steel-darker: #123f57;
+  --color-steel-tint: #e9eff2;
+  --color-steel-line: #c7d6dd;
+
+  /* Neutrals */
+  --color-ink: #14181b;
+  --color-ink-soft: #383f45;
+  --color-paper: #f5f3ee;
+  --color-paper-deep: #ece8e0;
+  --color-white: #ffffff;
+
+  /* Technical grey scale (warm-neutral, not blue-grey) */
+  --color-grey-100: #f1efea;
+  --color-grey-200: #e3e0d9;
+  --color-grey-300: #cac6bc;
+  --color-grey-400: #a7a297;
+  --color-grey-500: #837e73;
+  --color-grey-600: #5f5b52;
+
+  --font-sans: var(--font-plex-sans), "IBM Plex Sans", Arial, sans-serif;
+  --font-mono: var(--font-plex-mono), "IBM Plex Mono", "Courier New", monospace;
+
+  --container-max: 1360px;
+  --gutter: 20px;
+}
+
+@media (min-width: 640px) {
+  :root {
+    --gutter: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --gutter: 56px;
+  }
+}
+
+@theme inline {
+  --color-steel: var(--color-steel);
+  --color-steel-dark: var(--color-steel-dark);
+  --color-steel-darker: var(--color-steel-darker);
+  --color-steel-tint: var(--color-steel-tint);
+  --color-steel-line: var(--color-steel-line);
+
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+  --color-paper: var(--color-paper);
+  --color-paper-deep: var(--color-paper-deep);
+  --color-white: var(--color-white);
+
+  --color-grey-100: var(--color-grey-100);
+  --color-grey-200: var(--color-grey-200);
+  --color-grey-300: var(--color-grey-300);
+  --color-grey-400: var(--color-grey-400);
+  --color-grey-500: var(--color-grey-500);
+  --color-grey-600: var(--color-grey-600);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+::selection {
+  background: var(--color-steel);
+  color: var(--color-white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-steel);
+  outline-offset: 2px;
+}
+
+/* Signature corner-cut frame, echoing the brochure's notched photo panels */
+.corner-cut {
+  --cut: 28px;
+  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
+}
+
+@media (min-width: 1024px) {
+  .corner-cut {
+    --cut: 56px;
+  }
+}
