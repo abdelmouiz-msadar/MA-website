@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { Container } from "@/components/ui/container";
-import { CtaLink } from "@/components/ui/cta-link";
-import { Eyebrow, SectionHeading } from "@/components/ui/section-heading";
-import { PullQuote } from "@/components/ui/pull-quote";
+import { ButtonLink } from "@/components/ui/button";
+import { Eyebrow, SectionIntro } from "@/components/ui/heading";
+import { Reveal } from "@/components/ui/reveal";
+import { PageHero } from "@/components/sections/page-hero";
+import { Statement } from "@/components/sections/statement";
 import { ClosingCta } from "@/components/sections/closing-cta";
-import {
-  aboutHero,
-  positioning,
-  missionQuote,
-  proximityBlock,
-  dimensions,
-  continuity,
-  aboutCta,
-} from "@/lib/content/about";
+import { aboutCta, aboutHero, continuity, dimensions, missionQuote, positioning, proximityBlock } from "@/lib/content/about";
+import { aboutDimensions } from "@/lib/content/pages";
 
 export const metadata: Metadata = {
   title: "Qui sommes-nous",
@@ -24,118 +19,93 @@ export const metadata: Metadata = {
 export default function QuiSommesNousPage() {
   return (
     <>
-      {/* HERO */}
-      <section className="border-b border-ink/10 bg-paper">
-        <Container className="flex flex-col gap-6 pt-16 pb-12 sm:pt-20 lg:pt-24">
-          <Eyebrow>{aboutHero.eyebrow}</Eyebrow>
-          <h1 className="max-w-[18ch] text-[clamp(2.25rem,5vw,4rem)] font-medium leading-[1.06] tracking-[-0.02em] text-ink text-balance">
-            {aboutHero.title}
-          </h1>
-          <p className="max-w-[54ch] text-[17px] leading-relaxed text-ink-soft sm:text-[19px]">
-            {aboutHero.lead}
-          </p>
-        </Container>
+      <PageHero crumbs={[{ label: aboutHero.eyebrow }]} title={aboutHero.title} highlight="Notre expertise." lead={aboutHero.lead} />
 
-        <div className="relative">
-          <div className="corner-cut relative aspect-[4/5] w-full overflow-hidden bg-grey-200 sm:aspect-[16/9]">
-            <Image
-              src={aboutHero.image}
-              alt={aboutHero.imageAlt}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover"
-            />
-          </div>
-        </div>
-      </section>
-
-      {/* POSITIONING */}
-      <section className="bg-white">
-        <Container className="grid grid-cols-1 gap-10 py-20 sm:py-28 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <SectionHeading eyebrow={positioning.eyebrow} title={positioning.title} />
-          <div className="flex flex-col gap-6 lg:pt-2">
+      {/* POSITIONING — image left, text right */}
+      <section className="bg-white py-20 sm:py-28">
+        <Container className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <Reveal className="relative aspect-[4/3] overflow-hidden bg-wash">
+            <Image src={aboutHero.image} alt={aboutHero.imageAlt} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
+          </Reveal>
+          <Reveal delay={120} className="flex flex-col gap-6">
+            <SectionIntro eyebrow={positioning.eyebrow} title={positioning.title} highlight="pas un simple prestataire." size="sub" />
             {positioning.paragraphs.map((p) => (
-              <p key={p} className="max-w-[62ch] text-[16px] leading-relaxed text-ink-soft">
+              <p key={p} className="max-w-[58ch] text-[17px] leading-relaxed text-ink/85">
                 {p}
               </p>
             ))}
+          </Reveal>
+        </Container>
+      </section>
+
+      {/* MISSION — scroll-filled statement */}
+      <section className="bg-wash py-24 sm:py-32">
+        <Container>
+          <div className="mx-auto max-w-[1080px]">
+            <Eyebrow>Notre mission</Eyebrow>
+            <Statement as="blockquote" text={missionQuote} className="mt-6" />
           </div>
         </Container>
       </section>
 
-      {/* MISSION — dark pull quote */}
-      <section className="bg-ink text-white">
-        <Container className="py-24 sm:py-28">
-          <PullQuote eyebrow="Notre mission">{missionQuote}</PullQuote>
-        </Container>
-      </section>
-
-      {/* EXPERTISE + PROXIMITY */}
-      <section className="bg-paper">
-        <Container className="py-20 sm:py-28">
-          <div className="grid grid-cols-1 gap-10 border-t border-ink/15 pt-10 sm:grid-cols-3 sm:gap-8">
-            {[proximityBlock.expertise, proximityBlock.proximity, proximityBlock.outcome].map((block) => (
-              <div key={block.label} className="flex flex-col gap-3">
-                <Eyebrow>{block.label}</Eyebrow>
-                <p className="text-[15px] leading-relaxed text-ink-soft">{block.body}</p>
-              </div>
-            ))}
-          </div>
+      {/* EXPERTISE + PROXIMITY — inset navy panel */}
+      <section className="bg-white py-20 sm:py-28">
+        <Container>
+          <Reveal className="relative overflow-hidden">
+            <div className="bg-deep px-7 py-14 text-white sm:px-12 lg:px-16 lg:py-20">
+              <ul className="grid grid-cols-1 gap-12 md:grid-cols-3 md:gap-10">
+                {[proximityBlock.expertise, proximityBlock.proximity, proximityBlock.outcome].map((block) => (
+                  <li key={block.label} className="flex flex-col gap-4">
+                    <h2 className="text-[24px] font-bold leading-snug">{block.label}</h2>
+                    <p className="text-[16px] leading-relaxed text-white/80">{block.body}</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="brand-line w-[86%]" />
+          </Reveal>
         </Container>
       </section>
 
       {/* DIMENSIONS */}
-      <section className="bg-white">
-        <Container className="py-20 sm:py-28">
-          <SectionHeading
-            eyebrow="Énergie, confort, bien-être"
-            title="Des dimensions interconnectées, pas des promesses isolées."
-            className="mb-14 lg:mb-16"
-          />
-          <ol className="grid grid-cols-1 border-t border-ink/15 sm:grid-cols-3">
-            {dimensions.map((d) => (
-              <li
-                key={d.index}
-                className="flex flex-col gap-3 border-b border-ink/15 py-8 sm:border-r sm:border-b-0 sm:py-10 sm:pr-8 sm:pl-8 sm:first:pl-0 sm:last:border-r-0"
-              >
-                <span className="font-mono text-[13px] text-steel/70">{d.index}</span>
-                <h3 className="text-[18px] font-medium text-ink">{d.title}</h3>
-                <p className="max-w-[38ch] text-[15px] leading-relaxed text-ink-soft">{d.body}</p>
-              </li>
+      <section className="bg-wash py-24 sm:py-32">
+        <Container>
+          <Reveal>
+            <SectionIntro align="center" eyebrow={aboutDimensions.eyebrow} title={aboutDimensions.title} highlight="pas des promesses isolées." />
+          </Reveal>
+          <ol className="mt-14 grid grid-cols-1 gap-5 md:grid-cols-3 lg:mt-16 lg:gap-6">
+            {dimensions.map((d, i) => (
+              <Reveal as="li" key={d.index} delay={i * 110} className="flex flex-col bg-white p-8 lg:p-10">
+                <span className="text-[56px] font-bold leading-none text-brand">{d.index}</span>
+                <h3 className="mt-6 text-[22px] font-bold text-navy">{d.title}</h3>
+                <p className="mt-3 text-[16px] leading-relaxed text-ink/80">{d.body}</p>
+              </Reveal>
             ))}
           </ol>
         </Container>
       </section>
 
-      {/* CONTINUITY */}
-      <section className="bg-paper">
-        <Container className="grid grid-cols-1 gap-12 py-20 sm:py-28 lg:grid-cols-2 lg:gap-16">
-          <div className="flex flex-col gap-6 lg:order-1 lg:pt-2">
-            <SectionHeading eyebrow={continuity.eyebrow} title={continuity.title} />
+      {/* CONTINUITY — text left, image right */}
+      <section className="bg-white py-20 sm:py-28">
+        <Container className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <Reveal className="order-2 flex flex-col gap-6 lg:order-1">
+            <SectionIntro eyebrow={continuity.eyebrow} title={continuity.title} highlight="en continu." size="sub" />
             {continuity.paragraphs.map((p) => (
-              <p key={p} className="max-w-[52ch] text-[15px] leading-relaxed text-ink-soft">
+              <p key={p} className="max-w-[58ch] text-[17px] leading-relaxed text-ink/85">
                 {p}
               </p>
             ))}
-          </div>
-          <div className="corner-cut relative aspect-[4/3] w-full overflow-hidden bg-grey-200 lg:order-2">
-            <Image
-              src={continuity.image}
-              alt={continuity.imageAlt}
-              fill
-              sizes="(min-width: 1024px) 45vw, 100vw"
-              className="object-cover"
-            />
-          </div>
+          </Reveal>
+          <Reveal delay={120} className="relative order-1 aspect-[4/3] overflow-hidden bg-wash lg:order-2">
+            <Image src={continuity.image} alt={continuity.imageAlt} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
+          </Reveal>
         </Container>
       </section>
 
-      {/* CLOSING CTA */}
       <ClosingCta title={aboutCta.title} body={aboutCta.body}>
-        <CtaLink href={aboutCta.cta.href} variant="primary" className="bg-steel hover:bg-white hover:text-ink">
+        <ButtonLink href={aboutCta.cta.href} variant="solid">
           {aboutCta.cta.label}
-        </CtaLink>
+        </ButtonLink>
       </ClosingCta>
     </>
   );

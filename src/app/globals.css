@@ -1,33 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  /* Brand */
-  --color-steel: #1e6489;
-  --color-steel-dark: #164f6c;
-  --color-steel-darker: #123f57;
-  --color-steel-tint: #e9eff2;
-  --color-steel-line: #c7d6dd;
+  /* MA+ brand (from the 2026 brochure) */
+  --brand: #1e6489;
+  --brand-dark: #174f6d;
+  --brand-light: #4cb0d8;
 
-  /* Neutrals */
-  --color-ink: #14181b;
-  --color-ink-soft: #383f45;
-  --color-paper: #f5f3ee;
-  --color-paper-deep: #ece8e0;
-  --color-white: #ffffff;
+  /* Neutrals & depth */
+  --navy: #0c2f40;
+  --navy-deep: #08202d;
+  --ink: #222b33;
+  --muted: #5b6873;
+  --line: #d7e3ea;
+  --wash: #f4f9fb;
+  --white: #ffffff;
 
-  /* Technical grey scale (warm-neutral, not blue-grey) */
-  --color-grey-100: #f1efea;
-  --color-grey-200: #e3e0d9;
-  --color-grey-300: #cac6bc;
-  --color-grey-400: #a7a297;
-  --color-grey-500: #837e73;
-  --color-grey-600: #5f5b52;
+  --font-sans: var(--font-lato), "Lato", "Helvetica Neue", Arial, sans-serif;
 
-  --font-sans: var(--font-plex-sans), "IBM Plex Sans", Arial, sans-serif;
-  --font-mono: var(--font-plex-mono), "IBM Plex Mono", "Courier New", monospace;
-
-  --container-max: 1360px;
+  --container-max: 1312px;
   --gutter: 20px;
+  --header-h: 72px;
 }
 
 @media (min-width: 640px) {
@@ -38,32 +30,24 @@
 
 @media (min-width: 1024px) {
   :root {
-    --gutter: 56px;
+    --gutter: 64px;
+    --header-h: 80px;
   }
 }
 
 @theme inline {
-  --color-steel: var(--color-steel);
-  --color-steel-dark: var(--color-steel-dark);
-  --color-steel-darker: var(--color-steel-darker);
-  --color-steel-tint: var(--color-steel-tint);
-  --color-steel-line: var(--color-steel-line);
-
-  --color-ink: var(--color-ink);
-  --color-ink-soft: var(--color-ink-soft);
-  --color-paper: var(--color-paper);
-  --color-paper-deep: var(--color-paper-deep);
-  --color-white: var(--color-white);
-
-  --color-grey-100: var(--color-grey-100);
-  --color-grey-200: var(--color-grey-200);
-  --color-grey-300: var(--color-grey-300);
-  --color-grey-400: var(--color-grey-400);
-  --color-grey-500: var(--color-grey-500);
-  --color-grey-600: var(--color-grey-600);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-light: var(--brand-light);
+  --color-navy: var(--navy);
+  --color-navy-deep: var(--navy-deep);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-wash: var(--wash);
+  --color-white: var(--white);
 
   --font-sans: var(--font-sans);
-  --font-mono: var(--font-mono);
 }
 
 * {
@@ -75,15 +59,94 @@ html {
 }
 
 body {
-  background: var(--color-paper);
-  color: var(--color-ink);
+  background: var(--white);
+  color: var(--ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--brand);
+  color: var(--white);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-light);
+  outline-offset: 3px;
+}
+
+/* Thin brand gradient rule — top of page and bottom of footer */
+.brand-line {
+  height: 4px;
+  background: linear-gradient(90deg, var(--brand) 0%, var(--brand-light) 100%);
+}
+
+/* Soft pale-blue wash used behind light sections and interior page heroes */
+.bg-wash {
+  background:
+    radial-gradient(55% 60% at 12% 18%, rgb(30 100 137 / 0.1), transparent 70%),
+    radial-gradient(45% 55% at 88% 85%, rgb(76 176 216 / 0.16), transparent 70%),
+    var(--wash);
+}
+
+/* Deep navy → brand gradient used for flagship dark sections */
+.bg-deep {
+  background:
+    radial-gradient(60% 70% at 85% 10%, rgb(76 176 216 / 0.22), transparent 65%),
+    radial-gradient(50% 60% at 5% 95%, rgb(30 100 137 / 0.45), transparent 70%),
+    linear-gradient(160deg, var(--navy-deep) 0%, var(--navy) 45%, var(--brand-dark) 100%);
+}
+
+/* Bottom-weighted overlay for image cards */
+.card-overlay {
+  background: linear-gradient(
+    180deg,
+    rgb(8 32 45 / 0) 35%,
+    rgb(8 32 45 / 0.55) 62%,
+    rgb(8 32 45 / 0.92) 100%
+  );
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.8s cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Slow living zoom on the homepage hero photo */
+@keyframes hero-zoom {
+  from {
+    transform: scale(1.12);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.hero-zoom {
+  animation: hero-zoom 14s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .hero-zoom {
+    animation: none;
   }
   *,
   *::before,
@@ -91,28 +154,5 @@ body {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-::selection {
-  background: var(--color-steel);
-  color: var(--color-white);
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-steel);
-  outline-offset: 2px;
-}
-
-/* Signature corner-cut frame, echoing the brochure's notched photo panels */
-.corner-cut {
-  --cut: 28px;
-  clip-path: polygon(0 0, calc(100% - var(--cut)) 0, 100% var(--cut), 100% 100%, 0 100%);
-}
-
-@media (min-width: 1024px) {
-  .corner-cut {
-    --cut: 56px;
   }
 }

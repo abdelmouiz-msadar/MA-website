@@ -1,6 +1,8 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { ChevronRight } from "@/components/ui/icons";
 import { contactInfo } from "@/lib/content/navigation";
 import { needOptions } from "@/lib/content/contact";
 import { cn } from "@/lib/utils";
@@ -14,28 +16,22 @@ type FormState = {
   message: string;
 };
 
-const initialState: FormState = {
-  nom: "",
-  societe: "",
-  email: "",
-  telephone: "",
-  sujet: needOptions[0].value,
-  message: "",
-};
-
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const inputClass =
-  "w-full border-b border-ink/20 bg-transparent py-3 text-[15px] text-ink placeholder:text-ink/35 outline-none transition-colors focus:border-steel";
+const fieldClass =
+  "w-full border border-line bg-white px-4 py-3 text-[16px] text-ink outline-none transition-colors placeholder:text-muted/70 focus:border-brand focus:ring-2 focus:ring-brand/15 aria-[invalid=true]:border-red-700";
 
 export function ContactForm() {
-  const [values, setValues] = useState<FormState>(initialState);
+  const searchParams = useSearchParams();
+  const [values, setValues] = useState<FormState>(() => {
+    const requested = searchParams.get("sujet");
+    const sujet = needOptions.some((o) => o.value === requested) ? (requested as string) : needOptions[0].value;
+    return { nom: "", societe: "", email: "", telephone: "", sujet, message: "" };
+  });
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [status, setStatus] = useState<"idle" | "ready">("idle");
 
-  const update = (field: keyof FormState) => (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
-  ) => {
+  const update = (field: keyof FormState) => (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setValues((v) => ({ ...v, [field]: e.target.value }));
   };
 
@@ -68,56 +64,29 @@ export function ContactForm() {
       values.message,
     ].filter((line): line is string => line !== null);
 
-    const mailto = `mailto:${contactInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
     setStatus("ready");
-    window.location.href = mailto;
+    window.location.href = `mailto:${contactInfo.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines.join("\n"))}`;
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-8">
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-6">
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        <Field label="Nom" error={errors.nom}>
-          <input
-            type="text"
-            value={values.nom}
-            onChange={update("nom")}
-            className={inputClass}
-            aria-invalid={Boolean(errors.nom)}
-            autoComplete="name"
-          />
+        <Field label="Nom" required error={errors.nom}>
+          <input type="text" value={values.nom} onChange={update("nom")} className={fieldClass} aria-invalid={Boolean(errors.nom)} autoComplete="name" />
         </Field>
         <Field label="Société">
-          <input
-            type="text"
-            value={values.societe}
-            onChange={update("societe")}
-            className={inputClass}
-            autoComplete="organization"
-          />
+          <input type="text" value={values.societe} onChange={update("societe")} className={fieldClass} autoComplete="organization" />
         </Field>
-        <Field label="Email" error={errors.email}>
-          <input
-            type="email"
-            value={values.email}
-            onChange={update("email")}
-            className={inputClass}
-            aria-invalid={Boolean(errors.email)}
-            autoComplete="email"
-          />
+        <Field label="Email" required error={errors.email}>
+          <input type="email" value={values.email} onChange={update("email")} className={fieldClass} aria-invalid={Boolean(errors.email)} autoComplete="email" />
         </Field>
         <Field label="Téléphone">
-          <input
-            type="tel"
-            value={values.telephone}
-            onChange={update("telephone")}
-            className={inputClass}
-            autoComplete="tel"
-          />
+          <input type="tel" value={values.telephone} onChange={update("telephone")} className={fieldClass} autoComplete="tel" />
         </Field>
       </div>
 
       <Field label="Sujet">
-        <select value={values.sujet} onChange={update("sujet")} className={cn(inputClass, "cursor-pointer")}>
+        <select value={values.sujet} onChange={update("sujet")} className={cn(fieldClass, "cursor-pointer")}>
           {needOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -126,28 +95,21 @@ export function ContactForm() {
         </select>
       </Field>
 
-      <Field label="Message" error={errors.message}>
-        <textarea
-          value={values.message}
-          onChange={update("message")}
-          rows={5}
-          className={cn(inputClass, "resize-none")}
-          aria-invalid={Boolean(errors.message)}
-        />
+      <Field label="Message" required error={errors.message}>
+        <textarea value={values.message} onChange={update("message")} rows={6} className={cn(fieldClass, "resize-y")} aria-invalid={Boolean(errors.message)} />
       </Field>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-4 pt-2">
         <button
           type="submit"
-          className="inline-flex w-fit items-center gap-3 bg-ink px-6 py-3.5 text-[13px] font-medium uppercase tracking-[0.04em] text-white transition-colors hover:bg-steel"
+          className="group inline-flex min-h-12 w-fit items-center gap-2 bg-brand px-6 py-3 text-[15px] font-bold text-white transition-colors hover:bg-brand-dark"
         >
+          <ChevronRight size={16} className="transition-transform group-hover:translate-x-0.5" />
           Envoyer le message
         </button>
-        <p className="text-[13px] text-ink-soft">
+        <p className="text-[14px] leading-relaxed text-muted" aria-live="polite">
           {status === "ready"
-            ? "Votre client email va s'ouvrir avec votre message pré-rempli, à destination de " +
-              contactInfo.email +
-              "."
+            ? `Votre client email va s'ouvrir avec votre message pré-rempli, à destination de ${contactInfo.email}.`
             : "Ce formulaire ouvre votre client email avec un message pré-rempli — aucun envoi automatique n'est encore connecté à ce site."}
         </p>
       </div>
@@ -155,20 +117,15 @@ export function ContactForm() {
   );
 }
 
-function Field({
-  label,
-  error,
-  children,
-}: {
-  label: string;
-  error?: string;
-  children: ReactNode;
-}) {
+function Field({ label, required, error, children }: { label: string; required?: boolean; error?: string; children: ReactNode }) {
   return (
     <label className="flex flex-col gap-2">
-      <span className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">{label}</span>
+      <span className="text-[15px] font-bold text-navy">
+        {label}
+        {required ? <span className="text-brand"> *</span> : null}
+      </span>
       {children}
-      {error ? <span className="text-[12px] text-red-700">{error}</span> : null}
+      {error ? <span className="text-[14px] text-red-700">{error}</span> : null}
     </label>
   );
 }

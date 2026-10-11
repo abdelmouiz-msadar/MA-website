@@ -1,20 +1,13 @@
 import type { Metadata } from "next";
-import { IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
+import { Lato } from "next/font/google";
 import "./globals.css";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 
-const plexSans = IBM_Plex_Sans({
-  variable: "--font-plex-sans",
+const lato = Lato({
+  variable: "--font-lato",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const plexMono = IBM_Plex_Mono({
-  variable: "--font-plex-mono",
-  subsets: ["latin"],
-  weight: ["400", "500"],
+  weight: ["400", "700"],
   display: "swap",
 });
 
@@ -35,11 +28,14 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fr" className={`${plexSans.variable} ${plexMono.variable} h-full`}>
-      <body className="min-h-full flex flex-col bg-paper text-ink">
+    <html lang="fr" className={`${lato.variable} h-full`}>
+      <body className="flex min-h-full flex-col bg-white text-ink">
+        <noscript>
+          <style>{`.reveal{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:bg-ink focus:text-white focus:px-4 focus:py-2"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[60] focus:bg-navy focus:px-4 focus:py-2 focus:text-white"
         >
           Aller au contenu
         </a>

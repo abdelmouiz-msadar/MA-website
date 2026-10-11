@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Container } from "@/components/ui/container";
-import { Eyebrow } from "@/components/ui/section-heading";
+import { MailIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
+import { PageHero } from "@/components/sections/page-hero";
 import { ContactForm } from "@/components/sections/contact-form";
 import { contactHero } from "@/lib/content/contact";
 import { contactInfo } from "@/lib/content/navigation";
+import { contactLabels } from "@/lib/content/pages";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -11,58 +14,69 @@ export const metadata: Metadata = {
     "Contactez Maintenance Assistance Plus pour vos besoins en Facility Management, maintenance multi-technique ou infrastructure technique à Mohammedia, Maroc.",
 };
 
+const channels = [
+  {
+    icon: PinIcon,
+    label: contactLabels.address,
+    value: (
+      <>
+        {contactInfo.companyName}
+        {contactInfo.addressLines.map((line) => (
+          <span key={line} className="block">
+            {line}
+          </span>
+        ))}
+      </>
+    ),
+  },
+  {
+    icon: PhoneIcon,
+    label: contactLabels.phone,
+    value: (
+      <a href={`tel:${contactInfo.phoneHref}`} className="hover:text-brand">
+        {contactInfo.phone}
+      </a>
+    ),
+  },
+  {
+    icon: MailIcon,
+    label: contactLabels.email,
+    value: (
+      <a href={`mailto:${contactInfo.email}`} className="break-words hover:text-brand">
+        {contactInfo.email}
+      </a>
+    ),
+  },
+];
+
 export default function ContactPage() {
   return (
-    <section className="bg-paper">
-      <Container className="grid grid-cols-1 gap-16 py-16 sm:py-20 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 lg:py-24">
-        <div className="flex flex-col gap-10">
-          <div className="flex flex-col gap-6">
-            <Eyebrow>{contactHero.eyebrow}</Eyebrow>
-            <h1 className="max-w-[16ch] text-[clamp(2.25rem,4.6vw,3.5rem)] font-medium leading-[1.06] tracking-[-0.02em] text-ink text-balance">
-              {contactHero.title}
-            </h1>
-            <p className="max-w-[46ch] text-[16px] leading-relaxed text-ink-soft">{contactHero.lead}</p>
-          </div>
+    <>
+      <PageHero crumbs={[{ label: contactHero.eyebrow }]} title={contactHero.title} highlight="votre infrastructure." lead={contactHero.lead} />
 
-          <div className="flex flex-col gap-8 border-t border-ink/15 pt-8">
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Adresse</p>
-              <address className="mt-2 not-italic text-[15px] leading-relaxed text-ink">
-                {contactInfo.companyName}
-                <br />
-                {contactInfo.addressLines.map((line) => (
-                  <span key={line}>
-                    {line}
-                    <br />
-                  </span>
-                ))}
-              </address>
-            </div>
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Téléphone</p>
-              <a
-                href={`tel:${contactInfo.phoneHref}`}
-                className="mt-2 inline-block text-[15px] text-ink hover:text-steel"
-              >
-                {contactInfo.phone}
-              </a>
-            </div>
-            <div>
-              <p className="font-mono text-[11px] uppercase tracking-[0.1em] text-ink-soft">Email</p>
-              <a
-                href={`mailto:${contactInfo.email}`}
-                className="mt-2 inline-block break-all text-[15px] text-ink hover:text-steel"
-              >
-                {contactInfo.email}
-              </a>
-            </div>
-          </div>
-        </div>
+      <section className="bg-white py-20 sm:py-24">
+        <Container className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
+          <ul className="flex flex-col gap-4">
+            {channels.map(({ icon: Icon, label, value }) => (
+              <li key={label} className="flex gap-5 border border-line p-6">
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-brand text-white">
+                  <Icon size={22} />
+                </span>
+                <div className="flex min-w-0 flex-col gap-1.5">
+                  <span className="text-[15px] font-bold text-navy">{label}</span>
+                  <span className="text-[16px] leading-relaxed text-ink">{value}</span>
+                </div>
+              </li>
+            ))}
+          </ul>
 
-        <div className="lg:pt-2">
-          <ContactForm />
-        </div>
-      </Container>
-    </section>
+          <div className="bg-wash p-6 sm:p-10">
+            <Suspense fallback={<div className="min-h-[560px]" />}>
+              <ContactForm />
+            </Suspense>
+          </div>
+        </Container>
+      </section>
+    </>
   );
 }

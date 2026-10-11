@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/container";
-import { CtaLink } from "@/components/ui/cta-link";
-import { SectionHeading } from "@/components/ui/section-heading";
-import { ExpertiseIndex } from "@/components/sections/expertise-index";
+import { ButtonLink } from "@/components/ui/button";
+import { Reveal } from "@/components/ui/reveal";
+import { PageHero } from "@/components/sections/page-hero";
+import { ImageCard } from "@/components/sections/image-card";
 import { ClosingCta } from "@/components/sections/closing-cta";
 import { expertises } from "@/lib/content/expertises";
+import { expertiseHref } from "@/lib/content/routes";
 import { ctas } from "@/lib/content/cta";
+import { expertisesPage } from "@/lib/content/pages";
 
 export const metadata: Metadata = {
   title: "Expertises",
@@ -16,30 +19,32 @@ export const metadata: Metadata = {
 export default function ExpertisesPage() {
   return (
     <>
-      <section className="border-b border-ink/10 bg-paper">
-        <Container className="flex flex-col gap-6 py-16 sm:py-20 lg:py-24">
-          <SectionHeading
-            titleAs="h1"
-            eyebrow="Expertises"
-            title="L'index technique de nos capacités."
-            lead="Huit domaines, une seule équipe. Chaque expertise couvre l'ensemble du cycle de vie des installations — de l'étude à la maintenance — dans le respect des normes en vigueur."
-          />
+      <PageHero crumbs={[{ label: expertisesPage.eyebrow }]} title={expertisesPage.title} highlight="nos capacités." lead={expertisesPage.lead} />
+
+      <section className="bg-deep py-20 text-white sm:py-28">
+        <Container>
+          <ul className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+            {expertises.map((exp, i) => (
+              <Reveal as="li" key={exp.slug} delay={(i % 4) * 90} className="flex flex-col gap-5">
+                <ImageCard
+                  href={expertiseHref(exp.slug)}
+                  image={exp.image}
+                  title={exp.name}
+                  label={exp.index}
+                  sizes="(min-width: 1024px) 23vw, (min-width: 640px) 46vw, 100vw"
+                  className="aspect-[3/4] border border-white/15"
+                />
+                <p className="text-[15px] leading-relaxed text-white/80">{exp.summary}</p>
+              </Reveal>
+            ))}
+          </ul>
         </Container>
       </section>
 
-      <section className="bg-paper">
-        <Container className="py-20 sm:py-28">
-          <ExpertiseIndex items={expertises} showCapabilities />
-        </Container>
-      </section>
-
-      <ClosingCta
-        title="Une question sur une expertise en particulier ?"
-        body="Chaque site a ses contraintes. Échangeons sur les vôtres pour identifier les bonnes priorités techniques."
-      >
-        <CtaLink href={ctas.contactUs.href} variant="primary" className="bg-steel hover:bg-white hover:text-ink">
+      <ClosingCta title={expertisesPage.cta.title} body={expertisesPage.cta.body}>
+        <ButtonLink href={ctas.contactUs.href} variant="solid">
           {ctas.contactUs.label}
-        </CtaLink>
+        </ButtonLink>
       </ClosingCta>
     </>
   );

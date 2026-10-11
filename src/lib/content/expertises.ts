@@ -12,7 +12,10 @@ export type Expertise = {
   /** Role of this domain within MA+'s broader Facility Management offering */
   operationalValue: string;
   capabilities: string[];
+  /** Card / thumbnail photo (may be lower resolution) */
   image: string;
+  /** Large placements — always a high-resolution original */
+  cover: string;
   /** Slugs of related domains, for cross-linking */
   related: string[];
 };
@@ -39,7 +42,8 @@ export const expertises: Expertise[] = [
       "Éclairage et gestion énergétique : LED, détecteurs de présence, gradation automatique",
       "Systèmes d'alimentation de secours : groupes électrogènes et onduleurs",
     ],
-    image: "/images/technician-electrical-cabinet.jpg",
+    image: "/images/domains/cfo-transformer.jpg",
+    cover: "/images/technician-electrical-cabinet.jpg",
     related: ["cfa", "cvc", "construction"],
   },
   {
@@ -63,7 +67,8 @@ export const expertises: Expertise[] = [
       "Automatisation et capteurs intelligents : surveillance des équipements, maintenance prédictive",
       "Signalétique et multimédia : affichage dynamique, sonorisation, interphonie",
     ],
-    image: "/images/control-room-monitoring.jpg",
+    image: "/images/domains/cfa-control-cabinet.jpg",
+    cover: "/images/control-room-monitoring.jpg",
     related: ["cfo", "cvc", "maintenance"],
   },
   {
@@ -88,7 +93,8 @@ export const expertises: Expertise[] = [
       "Régulation et GTB : automatisation pour optimiser la consommation énergétique",
       "Qualité de l'air intérieur : filtration, humidification, purification",
     ],
-    image: "/images/hero-ducting-inspection.jpg",
+    image: "/images/domains/cvc-split-unit.jpg",
+    cover: "/images/hero-ducting-inspection.jpg",
     related: ["cfo", "fluides-medicaux", "amenagements"],
   },
   {
@@ -114,6 +120,7 @@ export const expertises: Expertise[] = [
       "Sécurité et conformité : détection de fuites et systèmes d'alerte",
     ],
     image: "/images/technician-hands-on.jpg",
+    cover: "/images/technician-hands-on.jpg",
     related: ["cvc", "plomberie", "maintenance"],
   },
   {
@@ -138,7 +145,8 @@ export const expertises: Expertise[] = [
       "Traitement des eaux : adoucisseurs, filtres, réduction du tartre",
       "Protection incendie : sprinklers et RIA",
     ],
-    image: "/images/technicians-diagnostic-device.jpg",
+    image: "/images/domains/plomberie-pumps.jpg",
+    cover: "/images/technicians-diagnostic-device.jpg",
     related: ["cvc", "fluides-medicaux", "construction"],
   },
   {
@@ -162,6 +170,7 @@ export const expertises: Expertise[] = [
       "Respect des délais et du budget",
     ],
     image: "/images/team-cta-inspection.jpg",
+    cover: "/images/team-cta-inspection.jpg",
     related: ["cfo", "cfa", "amenagements"],
   },
   {
@@ -184,7 +193,8 @@ export const expertises: Expertise[] = [
       "Maintenance réglementaire : conformité aux obligations légales",
       "Support et astreinte 24/7 : continuité des services",
     ],
-    image: "/images/technicians-diagnostic-device.jpg",
+    image: "/images/domains/maintenance-intervention.jpg",
+    cover: "/images/technicians-diagnostic-device.jpg",
     related: ["cfa", "cvc", "construction"],
   },
   {
@@ -208,7 +218,8 @@ export const expertises: Expertise[] = [
       "Réaménagement des espaces techniques et installation de nouvelles technologies",
       "Optimisation énergétique des installations existantes",
     ],
-    image: "/images/technician-electrical-cabinet.jpg",
+    image: "/images/control-room-monitoring.jpg",
+    cover: "/images/technician-electrical-cabinet.jpg",
     related: ["cvc", "cfa", "construction"],
   },
 ];
