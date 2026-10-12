@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
+import { SplitFeature } from "@/components/sections/editorial";
+import { NextPage } from "@/components/sections/next-page";
+import { PageHero, QuickAccess } from "@/components/sections/page-hero";
+import { TextLink } from "@/components/ui/button";
 import { Container } from "@/components/ui/container";
-import { ButtonLink } from "@/components/ui/button";
-import { Reveal } from "@/components/ui/reveal";
-import { PageHero } from "@/components/sections/page-hero";
-import { ImageCard } from "@/components/sections/image-card";
-import { ClosingCta } from "@/components/sections/closing-cta";
 import { expertises } from "@/lib/content/expertises";
-import { expertiseHref } from "@/lib/content/routes";
-import { ctas } from "@/lib/content/cta";
-import { expertisesPage } from "@/lib/content/pages";
+import { primaryNav } from "@/lib/content/navigation";
+import { expertisesPage, maintenancePageLabels } from "@/lib/content/pages";
+import { expertiseHref, routes } from "@/lib/content/routes";
+import { ui } from "@/lib/content/ui";
 
 export const metadata: Metadata = {
   title: "Expertises",
@@ -16,36 +16,33 @@ export const metadata: Metadata = {
     "Huit domaines techniques — courants forts, courants faibles, CVC, fluides médicaux, plomberie, construction, maintenance, aménagements. L'index complet des capacités techniques de Maintenance Assistance Plus.",
 };
 
+const maintenanceLabel = primaryNav.find((item) => item.href === routes.maintenance)?.label ?? "";
+
 export default function ExpertisesPage() {
   return (
     <>
-      <PageHero crumbs={[{ label: expertisesPage.eyebrow }]} title={expertisesPage.title} highlight="nos capacités." lead={expertisesPage.lead} />
+      <PageHero crumbs={[{ label: expertisesPage.eyebrow }]} title={expertisesPage.title} lead={expertisesPage.lead} image={expertisesPage.image} imagePosition="50% 30%">
+        <QuickAccess label={ui.quickAccess} items={expertises.map((exp) => ({ href: `#${exp.slug}`, label: exp.shortLabel ?? exp.name }))} />
+      </PageHero>
 
-      <section className="bg-deep py-20 text-white sm:py-28">
+      <section className="bg-background py-section-y text-text">
         <Container>
-          <ul className="grid grid-cols-1 gap-x-6 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="flex flex-col gap-20 md:gap-28 lg:gap-40">
             {expertises.map((exp, i) => (
-              <Reveal as="li" key={exp.slug} delay={(i % 4) * 90} className="flex flex-col gap-5">
-                <ImageCard
-                  href={expertiseHref(exp.slug)}
-                  image={exp.image}
-                  title={exp.name}
-                  label={exp.index}
-                  sizes="(min-width: 1024px) 23vw, (min-width: 640px) 46vw, 100vw"
-                  className="aspect-[3/4] border border-white/15"
-                />
-                <p className="text-[15px] leading-relaxed text-white/80">{exp.summary}</p>
-              </Reveal>
+              <li key={exp.slug}>
+                <SplitFeature id={exp.slug} index={i + 1} total={expertises.length} title={exp.name} image={exp.cover} reversed={i % 2 === 1}>
+                  <p className="max-w-md text-lg text-muted">{exp.summary}</p>
+                  <TextLink href={expertiseHref(exp.slug)} className="mt-8">
+                    {expertisesPage.discover}
+                  </TextLink>
+                </SplitFeature>
+              </li>
             ))}
-          </ul>
+          </ol>
         </Container>
       </section>
 
-      <ClosingCta title={expertisesPage.cta.title} body={expertisesPage.cta.body}>
-        <ButtonLink href={ctas.contactUs.href} variant="solid">
-          {ctas.contactUs.label}
-        </ButtonLink>
-      </ClosingCta>
+      <NextPage href={routes.maintenance} label={maintenanceLabel} image={maintenancePageLabels.image} />
     </>
   );
 }

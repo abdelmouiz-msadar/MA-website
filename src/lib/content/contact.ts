@@ -1,9 +1,10 @@
-import { getExpertiseBySlug } from "@/lib/content/expertises";
-
 export const contactHero = {
   eyebrow: "Contact",
   title: "Parlons de votre infrastructure.",
   lead: "Un besoin en maintenance, facility management ou infrastructure technique ? Échangeons sur vos enjeux.",
+  image: "/images/team-cta-inspection.jpg",
+  writeUs: "Écrivez-nous",
+  callUs: "Appelez-nous",
 };
 
 export type NeedOption = { value: string; label: string };
@@ -21,46 +22,43 @@ export const needOptions: NeedOption[] = [
   { value: "autre", label: "Autre" },
 ];
 
-/** Needs that aren't an expertise domain get their own photo; the rest reuse the domain's card photo. */
-const extraNeedImages: Record<string, string> = {
-  "facility-management": "/images/hero-ducting-inspection.jpg",
-  autre: "/images/technicians-diagnostic-device.jpg",
-};
-
-export const needImage = (value: string) => getExpertiseBySlug(value)?.image ?? extraNeedImages[value] ?? "";
-
 export const isNeed = (value: string | null): value is string => needOptions.some((o) => o.value === value);
 
-/** Microcopy for the guided contact request (describes the interaction only — no promises about response times). */
-export const contactBuilder = {
-  steps: [
-    { label: "Votre besoin", title: "Sur quel domaine pouvons-nous vous accompagner ?" },
-    { label: "Votre projet", title: "Décrivez votre installation et vos enjeux." },
-    { label: "Vos coordonnées", title: "Comment vous joindre ?" },
+/** Microcopy for the contact form (describes the interaction only — no promises about response times). */
+export const contactForm = {
+  asideEyebrow: "Votre message",
+  asideTitle: "Décrivez-nous votre besoin en quelques lignes.",
+  howEyebrow: "Comment ça marche",
+  how: [
+    { title: "Vous décrivez votre besoin", body: "Quelques informations sur vous et sur votre installation." },
+    { title: "Votre messagerie s'ouvre", body: "Avec un email pré-rempli, adressé à notre équipe." },
+    { title: "Vous vérifiez, puis envoyez", body: "Rien ne part sans votre validation : ce site ne transmet ni ne conserve aucune donnée." },
   ],
-  stepCounter: (current: number, total: number) => `Étape ${current} sur ${total}`,
-  next: "Continuer",
-  back: "Retour",
-  edit: "Modifier",
-  submit: "Envoyer le message",
-  messagePlaceholder: "Type de site, équipements concernés, contraintes, calendrier…",
-  summaryTitle: "Votre demande",
-  summaryEmpty: "À compléter",
-  successTitle: "Votre demande est prête.",
-  orCall: "Vous préférez nous appeler ?",
-  restart: "Nouvelle demande",
-  copy: "Copier",
-  copied: "Copié",
+  addressEyebrow: "Adresse",
   directions: "Itinéraire",
+  required: "Les champs marqués d'un * sont obligatoires.",
+  sections: { contact: "Vos coordonnées", project: "Votre besoin", message: "Votre message" },
+  fields: {
+    nom: "Nom",
+    societe: "Société",
+    email: "Email",
+    telephone: "Téléphone",
+    site: "Type de site, équipements concernés",
+    message: "Message",
+  },
+  needsLegend: "Domaine concerné",
+  needsHint: "(facultatif, plusieurs choix possibles)",
+  messageMax: 1500,
+  counter: (n: number, max: number) => `${n} / ${max} caractères`,
+  submit: "Préparer mon email",
   errors: {
-    need: "Sélectionnez votre besoin.",
-    message: "Votre message est requis.",
-    name: "Votre nom est requis.",
+    nom: "Votre nom est requis.",
     email: "Votre email est requis.",
     emailFormat: "Format d'email invalide.",
+    message: "Votre message est requis.",
+    summary: "Merci de compléter les champs obligatoires.",
   },
-  notice: {
-    idle: "Ce formulaire ouvre votre client email avec un message pré-rempli — aucun envoi automatique n'est encore connecté à ce site.",
-    ready: (email: string) => `Votre client email va s'ouvrir avec votre message pré-rempli, à destination de ${email}.`,
-  },
+  ready: "Votre messagerie s'ouvre avec votre message pré-rempli.",
+  notice: (email: string) =>
+    `Votre messagerie s'ouvre avec un email pré-rempli, adressé à ${email} : il n'est envoyé que lorsque vous le validez. Sans messagerie configurée sur cet appareil, vous pouvez nous écrire ou nous appeler directement.`,
 };

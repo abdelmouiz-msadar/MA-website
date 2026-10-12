@@ -4,323 +4,257 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Container } from "@/components/ui/container";
-import { ArrowRight, ChevronDown, ChevronRight, ClockIcon, CloseIcon, MailIcon, MenuIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
+import { ButtonLink } from "@/components/ui/button";
+import { EmailText } from "@/components/ui/email-text";
+import { ArrowUpRight } from "@/components/ui/icons";
+import { ctas } from "@/lib/content/cta";
 import { contactInfo, primaryNav } from "@/lib/content/navigation";
-import { expertises } from "@/lib/content/expertises";
-import { expertiseHref, routes } from "@/lib/content/routes";
-import { homeSections, footerContent } from "@/lib/content/pages";
-import { finalCta } from "@/lib/content/site";
+import { routes } from "@/lib/content/routes";
+import { ui } from "@/lib/content/ui";
 import { cn } from "@/lib/utils";
+
+const MENU_ID = "menu-mobile";
+const desktopNav = primaryNav.filter((item) => item.href !== routes.home && item.href !== routes.contact);
+const mobileNav = primaryNav.filter((item) => item.href !== routes.home);
+
+const isActive = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
+  // Solid once the page moves; slides away while scrolling down, returns on the way up.
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    onScroll();
+    let last = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 48);
+      const delta = y - last;
+      if (Math.abs(delta) < 8) return;
+      setHidden(delta > 0 && y > 320);
+      last = y;
+    };
+    const frame = requestAnimationFrame(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
-  const closeMenu = useCallback(() => {
-    setMenuOpen(false);
-    menuButtonRef.current?.focus();
-  }, []);
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
 
-  const overlay = pathname === "/" && !scrolled;
+  useEffect(() => {
+    if (!menuOpen) return;
+    const root = document.documentElement;
+    const background = Array.from(document.querySelectorAll("main, footer, .skip-link"));
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setMenuOpen(false);
+      menuButtonRef.current?.focus();
+    };
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const onDesktop = (e: MediaQueryListEvent) => e.matches && setMenuOpen(false);
+
+    root.style.overflow = "hidden";
+    background.forEach((el) => el.setAttribute("inert", ""));
+    document.addEventListener("keydown", onKey);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      root.style.overflow = "";
+      background.forEach((el) => el.removeAttribute("inert"));
+      document.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onDesktop);
+    };
+  }, [menuOpen]);
+
+  // Every page opens on a dark photographic hero, so the bar starts in its light-on-dark state.
+  const onDark = !scrolled || menuOpen;
+  const solid = scrolled && !menuOpen;
 
   return (
     <>
       <header
+        onFocusCapture={() => setHidden(false)}
         className={cn(
-          "fixed inset-x-0 top-0 z-40 transition-colors duration-300",
-          overlay ? "bg-transparent" : "bg-white/95 shadow-[0_1px_0_rgb(12_47_64/0.08)] backdrop-blur",
+          "fixed inset-x-0 top-0 z-50 border-b transition-[transform,background-color,border-color] duration-500 ease-editorial",
+          solid ? "border-border bg-background/90 backdrop-blur-md" : "border-transparent bg-transparent",
+          hidden && !menuOpen && "-translate-y-full",
+          onDark && "focus-light",
         )}
       >
-        <div className="brand-line" />
-
-        {/* Utility bar */}
-        <div
-          className={cn(
-            "hidden overflow-hidden transition-[height,opacity] duration-300 lg:block",
-            scrolled ? "h-0 opacity-0" : "h-12 opacity-100",
-            overlay ? "bg-navy-deep/40 text-white/90" : "border-b border-line text-ink",
-          )}
-        >
-          <Container className="flex h-12 items-center justify-between text-[14px]">
-            <div className="flex items-center gap-8">
-              <a href={`tel:${contactInfo.phoneHref}`} className="flex items-center gap-2 hover:underline">
-                <PhoneIcon size={16} /> {contactInfo.phone}
-              </a>
-              <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-2 hover:underline">
-                <MailIcon size={16} /> {contactInfo.email}
-              </a>
-            </div>
-            <div className="flex items-center gap-8">
-              <span className="flex items-center gap-2">
-                <ClockIcon size={16} /> {homeSections.maintenance.availabilityLabel}{" "}
-                <strong className="font-bold">{homeSections.maintenance.availabilityValue}</strong>
+        <div className="px-gutter">
+          <div className="mx-auto flex h-20 max-w-container items-center justify-between gap-8 md:h-24">
+            <Link href={routes.home} aria-label={ui.homeAria} onClick={closeMenu} className="-my-2 flex shrink-0 items-center py-2">
+              <span className="relative block">
+                <Image src="/brand/ma-plus-logo.svg" alt="" width={210} height={46} preload className="h-[38px] w-auto md:h-[46px]" />
+                <Image
+                  src="/brand/ma-plus-logo-white.svg"
+                  alt=""
+                  width={210}
+                  height={46}
+                  preload
+                  className={cn("absolute inset-0 h-full w-auto transition-opacity duration-500", !onDark && "opacity-0")}
+                />
               </span>
-              <span className="hidden xl:inline">{footerContent.certifications}</span>
-            </div>
-          </Container>
-        </div>
+            </Link>
 
-        {/* Main bar */}
-        <Container
-          className={cn(
-            "flex items-center justify-between gap-6 transition-[height] duration-300",
-            scrolled ? "h-16" : "h-[72px] lg:h-20",
-          )}
-        >
-          <Link href="/" aria-label="Maintenance Assistance Plus — Accueil" className="shrink-0">
-            <Image
-              src={overlay ? "/brand/ma-plus-logo-white.svg" : "/brand/ma-plus-logo-full.svg"}
-              alt="Maintenance Assistance Plus"
-              width={190}
-              height={64}
-              preload
-              className={cn("w-auto transition-[height] duration-300", scrolled ? "h-10" : "h-11 lg:h-12")}
-            />
-          </Link>
-
-          <div className="flex items-center gap-6">
-            <nav aria-label="Navigation principale" className="hidden items-center gap-7 xl:flex">
-              {primaryNav.slice(1).map((item) => {
-                const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "relative py-2 text-[15px] font-bold transition-colors",
-                      overlay ? "text-white hover:text-white/75" : "text-navy hover:text-brand",
-                      active && !overlay && "text-brand",
-                    )}
-                  >
-                    {item.label}
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "absolute inset-x-0 -bottom-0.5 h-0.5 origin-left scale-x-0 transition-transform duration-200",
-                        overlay ? "bg-white" : "bg-brand",
-                        active && "scale-x-100",
-                      )}
-                    />
-                  </Link>
-                );
-              })}
+            <nav aria-label={ui.mainNav} className="hidden items-center gap-10 lg:flex">
+              <ul className="flex items-center gap-8 xl:gap-9">
+                {desktopNav.map((item) => {
+                  const active = isActive(pathname, item.href);
+                  return (
+                    <li key={item.href}>
+                      <Link
+                        href={item.href}
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "group relative block py-2 text-sm font-medium transition-colors duration-300",
+                          onDark ? "text-white/85 hover:text-white" : "text-muted hover:text-text",
+                          active && (onDark ? "text-white!" : "text-text!"),
+                        )}
+                      >
+                        {item.label}
+                        <span
+                          aria-hidden
+                          className={cn(
+                            "absolute bottom-0.5 left-0 h-px w-full origin-left transition-transform duration-500 ease-editorial",
+                            active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
+                            onDark ? "bg-white" : "bg-accent",
+                          )}
+                        />
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+              <Link
+                href={routes.contact}
+                aria-current={pathname === routes.contact ? "page" : undefined}
+                className={cn(
+                  "group relative isolate inline-flex min-h-[44px] items-center gap-2 overflow-hidden px-5 text-sm font-semibold transition-colors duration-300 ease-editorial",
+                  onDark ? "bg-paper text-ink hover:text-paper" : "bg-ink text-paper",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className="absolute inset-0 -z-10 origin-left scale-x-0 bg-green transition-transform duration-500 ease-editorial group-hover:scale-x-100"
+                />
+                {primaryNav.find((item) => item.href === routes.contact)?.label}
+                <ArrowUpRight
+                  size={14}
+                  className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+                />
+              </Link>
             </nav>
 
             <button
               ref={menuButtonRef}
               type="button"
-              onClick={() => setMenuOpen(true)}
+              onClick={() => setMenuOpen((open) => !open)}
               aria-expanded={menuOpen}
-              aria-controls="site-menu"
+              aria-controls={MENU_ID}
+              aria-label={menuOpen ? ui.closeMenu : ui.openMenu}
               className={cn(
-                "flex h-14 w-16 flex-col items-center justify-center gap-0.5 transition-colors",
-                overlay ? "bg-navy-deep/55 text-white hover:bg-navy-deep/75" : "bg-brand text-white hover:bg-brand-dark",
+                "-mr-2 flex h-11 items-center gap-3 px-2 text-sm font-semibold transition-colors duration-300 lg:hidden",
+                onDark ? "text-white" : "text-text",
               )}
             >
-              <MenuIcon size={22} />
-              <span className="text-[11px] font-bold uppercase tracking-[0.08em]">Menu</span>
+              <span>{menuOpen ? ui.close : ui.menu}</span>
+              <span aria-hidden className="relative flex h-3 w-6 flex-col justify-between">
+                <span
+                  className={cn(
+                    "h-px w-full origin-center bg-current transition-transform duration-300 ease-in-out",
+                    menuOpen && "translate-y-[5.5px] rotate-45",
+                  )}
+                />
+                <span
+                  className={cn(
+                    "ml-auto h-px origin-center bg-current transition-[transform,width] duration-300 ease-in-out",
+                    menuOpen ? "w-full -translate-y-[5.5px] -rotate-45" : "w-2/3",
+                  )}
+                />
+              </span>
             </button>
           </div>
-        </Container>
+        </div>
       </header>
 
-      <MenuOverlay open={menuOpen} onClose={closeMenu} pathname={pathname} />
+      <MobileMenu open={menuOpen} pathname={pathname} onClose={closeMenu} />
     </>
   );
 }
 
-function MenuOverlay({ open, onClose, pathname }: { open: boolean; onClose: () => void; pathname: string }) {
-  const panelRef = useRef<HTMLDivElement>(null);
-  const closeRef = useRef<HTMLButtonElement>(null);
-  const [expertisesOpen, setExpertisesOpen] = useState(false);
-
-  useEffect(() => {
-    if (!open) return;
-    document.body.style.overflow = "hidden";
-    closeRef.current?.focus();
-
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-      if (e.key !== "Tab" || !panelRef.current) return;
-      const focusables = panelRef.current.querySelectorAll<HTMLElement>("a[href], button:not([disabled])");
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      document.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose]);
-
+function MobileMenu({ open, pathname, onClose }: { open: boolean; pathname: string; onClose: () => void }) {
   return (
     <div
-      id="site-menu"
-      ref={panelRef}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Menu"
+      id={MENU_ID}
       inert={!open}
       className={cn(
-        "fixed inset-0 z-50 overflow-y-auto bg-white transition-[opacity,visibility] duration-300",
-        open ? "visible opacity-100" : "invisible opacity-0",
+        "theme-dark fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-background pt-24 pb-8 text-text transition-[clip-path,visibility] duration-600 ease-reveal md:pt-28 lg:hidden",
+        open ? "visible [clip-path:inset(0_0_0_0)]" : "invisible [clip-path:inset(0_0_100%_0)]",
       )}
     >
-      <div className="brand-line" />
-      <Container className="flex h-[72px] items-center justify-between lg:h-24">
-        <Link href="/" onClick={onClose} aria-label="Maintenance Assistance Plus — Accueil">
-          <Image src="/brand/ma-plus-logo-full.svg" alt="Maintenance Assistance Plus" width={190} height={64} className="h-11 w-auto lg:h-12" />
-        </Link>
-        <button
-          ref={closeRef}
-          type="button"
-          onClick={onClose}
-          aria-label="Fermer le menu"
-          className="flex h-12 w-12 items-center justify-center border border-line text-navy transition-colors hover:border-brand hover:text-brand"
-        >
-          <CloseIcon size={22} />
-        </button>
-      </Container>
-
-      <Container className="grid grid-cols-1 gap-12 pt-6 pb-16 lg:grid-cols-[1fr_1fr_1.1fr] lg:gap-0 lg:pt-10">
-        {/* Primary pages */}
-        <div className="lg:border-r lg:border-line lg:pr-12">
-          <p className="mb-4 text-[14px] text-muted">Découvrez</p>
-          <ul className="flex flex-col">
-            {primaryNav.map((item) => {
-              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-              const isExpertises = item.href === routes.expertises;
-              return (
-                <li key={item.href} className="border-b border-line/70 lg:border-none">
-                  <div className="flex items-center justify-between">
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      aria-current={active ? "page" : undefined}
-                      className={cn(
-                        "group flex flex-1 items-center justify-between gap-6 py-3.5 text-[24px] font-bold transition-colors sm:text-[28px] lg:py-2.5",
-                        active ? "text-brand" : "text-navy hover:text-brand",
-                      )}
-                    >
-                      {item.label}
-                      <ArrowRight size={22} className="hidden shrink-0 transition-transform group-hover:translate-x-1 lg:block" />
-                    </Link>
-                    {isExpertises ? (
-                      <button
-                        type="button"
-                        onClick={() => setExpertisesOpen((v) => !v)}
-                        aria-expanded={expertisesOpen}
-                        aria-controls="menu-expertises"
-                        aria-label="Afficher les domaines d'expertise"
-                        className="flex h-11 w-11 items-center justify-center text-navy lg:hidden"
-                      >
-                        <ChevronDown size={22} className={cn("transition-transform", expertisesOpen && "rotate-180")} />
-                      </button>
-                    ) : null}
-                  </div>
-                  {isExpertises ? (
-                    <div
-                      id="menu-expertises"
-                      className={cn("grid transition-[grid-template-rows] duration-300 lg:hidden", expertisesOpen ? "grid-rows-[1fr] pb-3" : "grid-rows-[0fr]")}
-                    >
-                      <ul className="min-h-0 overflow-hidden" inert={!expertisesOpen}>
-                        {expertises.map((exp) => (
-                          <li key={exp.slug}>
-                            <Link href={expertiseHref(exp.slug)} onClick={onClose} className="flex items-baseline gap-3 py-2 text-[16px] text-ink">
-                              <span className="text-[13px] font-bold text-brand">{exp.index}</span>
-                              {exp.name}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-
-        {/* Expertise domains (desktop) */}
-        <div className="hidden lg:block lg:border-r lg:border-line lg:px-12">
-          <p className="mb-4 text-[14px] text-muted">Nos expertises</p>
-          <ul className="flex flex-col">
-            {expertises.map((exp) => (
-              <li key={exp.slug}>
+      <nav aria-label={ui.mobileNav} className="px-gutter">
+        <ul className="flex flex-col border-t border-text/10">
+          {mobileNav.map((item, i) => {
+            const active = isActive(pathname, item.href);
+            return (
+              <li
+                key={item.href}
+                style={{ transitionDelay: open ? `${100 + i * 45}ms` : "0ms" }}
+                className={cn(
+                  "border-b border-text/10 transition-[opacity,transform] duration-500 ease-reveal",
+                  open ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+                )}
+              >
                 <Link
-                  href={expertiseHref(exp.slug)}
+                  href={item.href}
                   onClick={onClose}
-                  className={cn(
-                    "group flex items-center justify-between gap-4 py-2.5 text-[17px] transition-colors",
-                    pathname === expertiseHref(exp.slug) ? "text-brand" : "text-ink hover:text-brand",
-                  )}
+                  aria-current={active ? "page" : undefined}
+                  className="group flex min-h-[60px] items-center justify-between gap-4 py-3"
                 >
-                  <span className="flex items-baseline gap-3">
-                    <span className="text-[13px] font-bold text-brand">{exp.index}</span>
-                    {exp.name}
+                  <span className={cn("text-h3 font-semibold transition-colors duration-300", active ? "text-text" : "text-text/80 group-hover:text-text")}>
+                    {item.label}
                   </span>
-                  <ChevronRight size={16} className="shrink-0 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-brand" />
+                  {active ? (
+                    <span aria-hidden className="h-1.5 w-1.5 shrink-0 bg-accent" />
+                  ) : (
+                    <ArrowUpRight
+                      size={16}
+                      className="shrink-0 text-text/40 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-text"
+                    />
+                  )}
                 </Link>
               </li>
-            ))}
-          </ul>
-        </div>
+            );
+          })}
+        </ul>
+      </nav>
 
-        {/* Contact */}
-        <div className="flex flex-col gap-8 lg:pl-12">
-          <div>
-            <p className="mb-4 text-[14px] text-muted">{finalCta.cta.label}</p>
-            <ul className="flex flex-col gap-3 text-[16px] text-ink">
-              <li>
-                <a href={`tel:${contactInfo.phoneHref}`} className="flex items-center gap-3 hover:text-brand">
-                  <PhoneIcon size={18} className="text-brand" /> {contactInfo.phone}
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${contactInfo.email}`} className="flex items-center gap-3 break-words hover:text-brand">
-                  <MailIcon size={18} className="shrink-0 text-brand" /> {contactInfo.email}
-                </a>
-              </li>
-              <li className="flex items-start gap-3">
-                <PinIcon size={18} className="mt-0.5 shrink-0 text-brand" />
-                <span>{contactInfo.addressLines.join(", ")}</span>
-              </li>
-            </ul>
-          </div>
-          <Link href={routes.contact} onClick={onClose} className="group relative block aspect-[16/10] overflow-hidden">
-            <Image
-              src="/images/team-cta-inspection.jpg"
-              alt=""
-              fill
-              sizes="(min-width: 1024px) 30vw, 100vw"
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-            />
-            <div className="card-overlay absolute inset-0" />
-            <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-4 p-5 text-[20px] font-bold text-white">
-              {finalCta.title}
-              <ArrowRight size={22} className="shrink-0 transition-transform group-hover:translate-x-1" />
-            </span>
-          </Link>
+      <div
+        style={{ transitionDelay: open ? "450ms" : "0ms" }}
+        className={cn(
+          "mt-auto flex flex-col gap-8 px-gutter pt-12 transition-[opacity,transform] duration-600 ease-reveal",
+          open ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0",
+        )}
+      >
+        <div className="flex flex-col gap-1 text-sm">
+          <span className="eyebrow mb-2 text-muted">{ui.reachUs}</span>
+          <a href={`mailto:${contactInfo.email}`} className="w-fit py-1.5 text-lg text-text transition-opacity hover:opacity-70">
+            <EmailText email={contactInfo.email} />
+          </a>
+          <a href={`tel:${contactInfo.phoneHref}`} className="w-fit py-1.5 text-lg whitespace-nowrap text-text transition-opacity hover:opacity-70">
+            {contactInfo.phone}
+          </a>
         </div>
-      </Container>
+        <ButtonLink href={ctas.contactUs.href} variant="inverted" onClick={onClose} className="w-full sm:w-auto sm:self-start">
+          {ctas.contactUs.label}
+        </ButtonLink>
+      </div>
     </div>
   );
 }

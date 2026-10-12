@@ -1,38 +1,71 @@
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { Breadcrumb, type Crumb } from "@/components/ui/breadcrumb";
 import { Container } from "@/components/ui/container";
-import { Eyebrow, HighlightText } from "@/components/ui/heading";
 
-/** Interior page hero — pale wash, centered breadcrumb, large split-colour headline (ENGIE interior pattern). */
+/** Interior page hero — full-bleed photo under ink gradients, breadcrumb, display headline, lead. */
 export function PageHero({
   crumbs,
-  eyebrow,
   title,
-  highlight,
   lead,
+  image,
+  imagePosition,
   children,
 }: {
   crumbs: Crumb[];
-  eyebrow?: string;
   title: string;
-  highlight?: string;
   lead?: ReactNode;
+  image: string;
+  /** CSS object-position for the photo, e.g. "50% 30%". */
+  imagePosition?: string;
   children?: ReactNode;
 }) {
   return (
-    <section className="bg-wash pt-32 pb-16 sm:pb-20 lg:pt-48 lg:pb-24">
-      <Container className="flex flex-col items-center text-center">
-        <Breadcrumb crumbs={crumbs} center />
+    <header className="theme-dark relative isolate flex min-h-[74svh] flex-col overflow-hidden bg-ink text-text lg:min-h-[80svh]">
+      <div aria-hidden className="intro-settle absolute inset-0 -z-20">
+        <Image src={image} alt="" fill preload sizes="100vw" className="object-cover" style={{ objectPosition: imagePosition }} />
+      </div>
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-ink/55" />
+      <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-64 bg-linear-to-b from-ink/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-t from-ink via-ink/45 to-transparent" />
 
-        {eyebrow ? <Eyebrow className="mt-10">{eyebrow}</Eyebrow> : null}
-        <h1
-          className={`${eyebrow ? "mt-5" : "mt-10"} max-w-[20ch] text-[clamp(2.375rem,5.2vw,4.25rem)] font-bold leading-[1.06] tracking-[-0.015em] text-navy text-balance`}
-        >
-          <HighlightText title={title} highlight={highlight} />
-        </h1>
-        {lead ? <p className="mt-7 max-w-[62ch] text-[17px] leading-relaxed text-ink/85 sm:text-[20px]">{lead}</p> : null}
-        {children}
+      <Container className="mt-auto pt-36 pb-10 md:pt-44 md:pb-14">
+        <Breadcrumb crumbs={crumbs} className="intro-fade" />
+        <div className="-mb-2 mt-5 overflow-hidden pb-2">
+          <h1 className="intro-mask max-w-4xl text-display font-semibold text-balance text-white">{title}</h1>
+        </div>
+        {lead ? (
+          <p className="intro-fade mt-6 max-w-2xl text-lg text-white/80" style={{ animationDelay: "0.45s" }}>
+            {lead}
+          </p>
+        ) : null}
+        {children ? (
+          <div className="intro-fade" style={{ animationDelay: "0.6s" }}>
+            {children}
+          </div>
+        ) : null}
       </Container>
-    </section>
+    </header>
+  );
+}
+
+/** Row of anchor chips under a hero ("Accès rapide"). */
+export function QuickAccess({ label, items }: { label: string; items: { href: string; label: string }[] }) {
+  return (
+    <nav aria-label={label} className="mt-12 border-t border-white/20 pt-6 md:mt-16">
+      <p className="eyebrow text-white/70">{label}</p>
+      <ul className="mt-4 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <li key={item.href}>
+            <a
+              href={item.href}
+              className="inline-flex min-h-[44px] items-center border border-white/25 px-4 text-sm font-medium text-white transition-colors duration-300 ease-editorial hover:border-white hover:bg-white hover:text-ink"
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }

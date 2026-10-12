@@ -1,54 +1,38 @@
 import Link from "next/link";
-import { HomeIcon } from "@/components/ui/icons";
-import { cn } from "@/lib/utils";
+import { Fragment } from "react";
+import { ui } from "@/lib/content/ui";
 
 export type Crumb = { label: string; href?: string };
 
-export function Breadcrumb({
-  crumbs,
-  tone = "light",
-  center = false,
-}: {
-  crumbs: Crumb[];
-  tone?: "light" | "dark";
-  center?: boolean;
-}) {
-  const dark = tone === "dark";
+/** Breadcrumb set in eyebrow type, always over a dark hero. */
+export function Breadcrumb({ crumbs, className }: { crumbs: Crumb[]; className?: string }) {
   return (
-    <nav aria-label="Fil d'Ariane">
-      <ol
-        className={cn(
-          "flex flex-wrap items-center gap-x-2 gap-y-1 text-[14px]",
-          center && "justify-center",
-          dark ? "text-white/80" : "text-ink",
-        )}
-      >
+    <nav aria-label={ui.breadcrumb} className={className}>
+      <ol className="eyebrow flex flex-wrap items-center gap-x-2 text-white/80">
         <li>
-          <Link
-            href="/"
-            className={cn("flex items-center", dark ? "text-white hover:text-brand-light" : "text-navy hover:text-brand")}
-            aria-label="Accueil"
-          >
-            <HomeIcon size={16} />
+          <Link href="/" className="transition-colors hover:text-white">
+            {ui.home}
           </Link>
         </li>
         {crumbs.map((crumb, i) => {
           const last = i === crumbs.length - 1;
           return (
-            <li key={crumb.label} className="flex items-center gap-2">
-              <span aria-hidden className={dark ? "text-white/50" : "text-muted"}>
+            <Fragment key={crumb.label}>
+              <li aria-hidden className="text-white/40">
                 /
-              </span>
-              {crumb.href && !last ? (
-                <Link href={crumb.href} className={dark ? "hover:text-white" : "hover:text-brand"}>
-                  {crumb.label}
-                </Link>
-              ) : (
-                <span aria-current={last ? "page" : undefined} className={cn(last && "font-bold", last && (dark ? "text-white" : "text-navy"))}>
-                  {crumb.label}
-                </span>
-              )}
-            </li>
+              </li>
+              <li>
+                {crumb.href && !last ? (
+                  <Link href={crumb.href} className="transition-colors hover:text-white">
+                    {crumb.label}
+                  </Link>
+                ) : (
+                  <span aria-current={last ? "page" : undefined} className="text-white">
+                    {crumb.label}
+                  </span>
+                )}
+              </li>
+            </Fragment>
           );
         })}
       </ol>

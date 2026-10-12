@@ -12,6 +12,8 @@ export const availability = {
 
 export const tooling = {
   eyebrow: "GMAO & GTB",
+  image: "/images/control-room-monitoring.jpg",
+  imageAlt: "Supervision et suivi technique dans une salle de contrôle Maintenance Assistance Plus",
   title: "Piloter la maintenance par la donnée, sans automatiser à l'aveugle.",
   paragraphs: [
     "Nous intégrons des outils de GMAO (Gestion de Maintenance Assistée par Ordinateur) pour planifier les interventions, suivre leur exécution et garantir la traçabilité de chaque action sur vos équipements.",

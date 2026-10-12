@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Image from "next/image";
-import { Container } from "@/components/ui/container";
-import { ButtonLink } from "@/components/ui/button";
-import { Eyebrow } from "@/components/ui/heading";
-import { Reveal } from "@/components/ui/reveal";
+import { NumberedColumns } from "@/components/sections/editorial";
+import { NextPage } from "@/components/sections/next-page";
 import { PageHero } from "@/components/sections/page-hero";
-import { Statement } from "@/components/sections/statement";
-import { ImageCard } from "@/components/sections/image-card";
-import { ClosingCta } from "@/components/sections/closing-cta";
-import { expertises, getExpertiseBySlug, getRelatedExpertises } from "@/lib/content/expertises";
-import { expertiseHref, routes } from "@/lib/content/routes";
+import { PhotoCard } from "@/components/sections/photo-card";
+import { ButtonLink, TextLink } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+import { Eyebrow, SectionHeader } from "@/components/ui/heading";
+import { Reveal } from "@/components/ui/reveal";
+import { isNeed } from "@/lib/content/contact";
 import { ctas } from "@/lib/content/cta";
+import { expertises, getExpertiseBySlug, getRelatedExpertises } from "@/lib/content/expertises";
 import { expertiseDetailLabels, expertisesPage } from "@/lib/content/pages";
+import { expertiseHref, routes } from "@/lib/content/routes";
 
 type Params = { slug: string };
 
@@ -32,102 +32,94 @@ export default async function ExpertiseDetailPage({ params }: { params: Promise<
   const expertise = getExpertiseBySlug(slug);
   if (!expertise) notFound();
 
+  const position = expertises.findIndex((e) => e.slug === slug);
+  const next = expertises[(position + 1) % expertises.length];
   const related = getRelatedExpertises(slug);
-  const eyebrow = `Expertise ${expertise.index}${expertise.shortLabel ? ` — ${expertise.shortLabel}` : ""}`;
+  const contactHref = isNeed(slug) ? `${routes.contact}?sujet=${slug}` : routes.contact;
+  const capabilities = expertise.capabilities.map((cap) => {
+    const [term, ...rest] = cap.split(" : ");
+    return { title: term, body: rest.join(" : ") };
+  });
 
   return (
     <>
       <PageHero
         crumbs={[{ label: expertisesPage.eyebrow, href: routes.expertises }, { label: expertise.name }]}
-        eyebrow={eyebrow}
         title={expertise.name}
-        highlight={expertise.name}
         lead={expertise.positioning}
+        image={expertise.cover}
       />
 
-      {/* OVERVIEW — image left, text right */}
-      <section className="bg-white py-20 sm:py-28">
-        <Container className="grid grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-20">
-          <Reveal className="relative aspect-[4/3] overflow-hidden bg-wash">
-            <Image src={expertise.cover} alt={expertise.name} fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
-          </Reveal>
-          <Reveal delay={120} className="flex flex-col gap-6">
-            <Eyebrow>{expertiseDetailLabels.overview}</Eyebrow>
-            {expertise.overview.map((p, i) => (
-              <p
-                key={p}
-                className={
-                  i === 0
-                    ? "max-w-[56ch] text-[20px] font-bold leading-snug text-navy sm:text-[22px]"
-                    : "max-w-[58ch] text-[17px] leading-relaxed text-ink/85"
-                }
-              >
-                {p}
-              </p>
-            ))}
-          </Reveal>
-        </Container>
-      </section>
-
-      {/* CAPABILITIES — inset navy panel */}
-      <section className="bg-white pb-20 sm:pb-28">
+      {/* OVERVIEW */}
+      <section className="bg-background py-section-y text-text">
         <Container>
-          <Reveal className="overflow-hidden">
-            <div className="bg-deep px-7 py-14 text-white sm:px-12 lg:px-16 lg:py-20">
-              <h2 className="text-center text-[clamp(1.875rem,3.4vw,3rem)] font-bold leading-tight">
-                {expertiseDetailLabels.capabilities}
-              </h2>
-              <ol className="mt-12 grid grid-cols-1 gap-x-14 gap-y-8 md:grid-cols-2 lg:mt-14">
-                {expertise.capabilities.map((cap, i) => {
-                  const [term, ...rest] = cap.split(" : ");
-                  const description = rest.join(" : ");
-                  return (
-                    <li key={cap} className="flex gap-5 border-t border-white/20 pt-6">
-                      <span className="w-10 shrink-0 text-[28px] font-bold leading-none text-brand-light">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <div className="flex flex-col gap-2">
-                        <h3 className="text-[19px] font-bold leading-snug">{term}</h3>
-                        {description ? <p className="text-[15px] leading-relaxed text-white/75">{description}</p> : null}
-                      </div>
-                    </li>
-                  );
-                })}
-              </ol>
+          <div className="grid grid-cols-4 gap-x-4 gap-y-10 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-8 lg:col-span-6">
+              <Reveal>
+                <Eyebrow>
+                  {expertiseDetailLabels.overview} — {expertise.index}
+                  {expertise.shortLabel ? ` · ${expertise.shortLabel}` : ""}
+                </Eyebrow>
+              </Reveal>
+              <Reveal as="h2" className="mt-5 max-w-2xl text-h3 font-semibold">
+                {expertise.overview[0]}
+              </Reveal>
             </div>
-            <div className="brand-line w-[86%]" />
-          </Reveal>
+            <div className="col-span-4 flex flex-col items-start gap-10 md:col-span-8 lg:col-span-5 lg:col-start-8 lg:pt-10">
+              {expertise.overview.slice(1).map((p) => (
+                <Reveal as="p" key={p} className="text-lg text-text/80">
+                  {p}
+                </Reveal>
+              ))}
+              <Reveal>
+                <ButtonLink href={contactHref} size="md">
+                  {expertiseDetailLabels.contactAbout(expertise.shortLabel ?? expertise.name)}
+                </ButtonLink>
+              </Reveal>
+            </div>
+          </div>
         </Container>
       </section>
 
-      {/* ROLE IN THE MA+ OFFER */}
-      <section className="bg-wash py-24 sm:py-32">
+      {/* CAPABILITIES */}
+      <section className="bg-surface py-section-y text-text">
         <Container>
-          <div className="mx-auto max-w-[1080px]">
-            <Eyebrow>{expertiseDetailLabels.role}</Eyebrow>
-            <Statement text={expertise.operationalValue} size="md" className="mt-6" />
+          <SectionHeader title={expertiseDetailLabels.capabilities} />
+          <NumberedColumns items={capabilities} className="md:grid-cols-2 lg:grid-cols-3 lg:gap-y-14" />
+        </Container>
+      </section>
+
+      {/* ROLE IN THE MA+ OFFER — dark statement */}
+      <section className="theme-dark bg-background py-section-y text-text">
+        <Container>
+          <div className="grid grid-cols-4 gap-x-4 gap-y-8 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <Reveal className="col-span-4 md:col-span-8 lg:col-span-4">
+              <Eyebrow>{expertiseDetailLabels.role}</Eyebrow>
+            </Reveal>
+            <Reveal as="p" className="col-span-4 text-h2 font-semibold text-balance md:col-span-8 lg:col-span-7 lg:col-start-6">
+              {expertise.operationalValue}
+            </Reveal>
           </div>
         </Container>
       </section>
 
       {/* RELATED */}
       {related.length > 0 ? (
-        <section className="bg-white py-20 sm:py-28">
+        <section className="bg-background py-section-y text-text">
           <Container>
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-              <h2 className="text-[clamp(1.875rem,3.4vw,3rem)] font-bold leading-tight text-navy">{expertiseDetailLabels.related}</h2>
-              <ButtonLink href={routes.expertises}>{ctas.discoverExpertises.label}</ButtonLink>
-            </div>
-            <ul className="mt-12 grid grid-cols-1 gap-5 sm:grid-cols-3 lg:gap-6">
+            <SectionHeader
+              title={expertiseDetailLabels.related}
+              action={<TextLink href={ctas.discoverExpertises.href}>{ctas.discoverExpertises.label}</TextLink>}
+            />
+            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-3">
               {related.map((item, i) => (
-                <Reveal as="li" key={item.slug} delay={i * 100}>
-                  <ImageCard
+                <Reveal as="li" key={item.slug} delay={i * 90}>
+                  <PhotoCard
                     href={expertiseHref(item.slug)}
                     image={item.image}
+                    index={item.index}
                     title={item.name}
-                    label={item.index}
                     sizes="(min-width: 640px) 31vw, 100vw"
-                    className="aspect-[4/5] sm:aspect-[3/4]"
                   />
                 </Reveal>
               ))}
@@ -136,12 +128,7 @@ export default async function ExpertiseDetailPage({ params }: { params: Promise<
         </section>
       ) : null}
 
-      <ClosingCta title={expertiseDetailLabels.ctaTitle} body={expertiseDetailLabels.ctaBody(expertise.name)}>
-        <ButtonLink href={ctas.contactUs.href} variant="solid">
-          {ctas.contactUs.label}
-        </ButtonLink>
-        <ButtonLink href={ctas.discoverMaintenance.href}>{ctas.discoverMaintenance.label}</ButtonLink>
-      </ClosingCta>
+      <NextPage href={expertiseHref(next.slug)} label={next.name} image={next.cover} eyebrow={`${expertisesPage.eyebrow} — ${next.index}`} />
     </>
   );
 }

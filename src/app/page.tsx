@@ -1,255 +1,181 @@
-import Image from "next/image";
-import Link from "next/link";
-import { Container } from "@/components/ui/container";
-import { ButtonLink } from "@/components/ui/button";
-import { Eyebrow, HighlightText, SectionIntro } from "@/components/ui/heading";
-import { ArrowRight, ClockIcon } from "@/components/ui/icons";
-import { Reveal } from "@/components/ui/reveal";
 import { HomeHero } from "@/components/sections/home-hero";
-import { Statement } from "@/components/sections/statement";
-import { KeyFigures } from "@/components/sections/key-figures";
-import { ImageCard } from "@/components/sections/image-card";
-import { ContactInvite } from "@/components/sections/contact-invite";
-import { expertises } from "@/lib/content/expertises";
-import { expertiseHref, routes } from "@/lib/content/routes";
+import { CardCarousel } from "@/components/sections/card-carousel";
+import { FigureLinks, LabelGrid, NumberedColumns, NumberedList } from "@/components/sections/editorial";
+import { ExpertiseIndex } from "@/components/sections/expertise-index";
+import { ProcessTimeline } from "@/components/sections/process-timeline";
+import { TextLink } from "@/components/ui/button";
+import { Container } from "@/components/ui/container";
+import { Eyebrow, SectionHeader } from "@/components/ui/heading";
+import { ParallaxImage } from "@/components/ui/parallax-image";
+import { Reveal } from "@/components/ui/reveal";
+import { dimensions, dimensionsIntro } from "@/lib/content/about";
 import { ctas } from "@/lib/content/cta";
-import { homeSections } from "@/lib/content/pages";
-import { qseCertificates } from "@/lib/content/qse";
-import {
-  commitments,
-  finalCta,
-  introduction,
-  maintenanceTypes,
-  processSteps,
-  qseCertifiedBy,
-  qseStandards,
-} from "@/lib/content/site";
+import { expertises } from "@/lib/content/expertises";
+import { homeSections, keyFigures } from "@/lib/content/pages";
+import { routes } from "@/lib/content/routes";
+import { commitments, introduction, maintenanceTypes, processSteps, qseCertifiedBy, qseStandards } from "@/lib/content/site";
 
 export default function Home() {
+  const { qse } = homeSections;
+
   return (
     <>
       <HomeHero />
 
-      {/* WHO WE ARE — statement + detail */}
-      <section className="bg-white py-24 sm:py-32">
+      {/* WHO WE ARE */}
+      <section id="positionnement" className="bg-background py-section-y text-text">
         <Container>
-          <div className="mx-auto max-w-[1080px]">
-            <Eyebrow>{introduction.eyebrow}</Eyebrow>
-            <Statement text={introduction.lead} className="mt-6" />
-            <div className="mt-10">
-              <ButtonLink href={routes.about}>{introduction.eyebrow}</ButtonLink>
+          <div className="grid grid-cols-4 gap-x-4 gap-y-10 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-8 lg:col-span-6">
+              <Reveal>
+                <Eyebrow>{introduction.eyebrow}</Eyebrow>
+              </Reveal>
+              <Reveal as="h2" className="mt-5 max-w-2xl text-h1 font-semibold text-balance">
+                {introduction.title}
+              </Reveal>
+            </div>
+            <div className="col-span-4 flex flex-col gap-10 md:col-span-8 lg:col-span-5 lg:col-start-8 lg:pt-10">
+              <Reveal as="p" className="text-lg text-text/80">
+                {introduction.lead} {introduction.body[0]}
+              </Reveal>
+              <Reveal>
+                <LabelGrid label={introduction.scope.label} items={introduction.scope.items} />
+              </Reveal>
+              <Reveal>
+                <TextLink href={routes.about}>{introduction.link}</TextLink>
+              </Reveal>
             </div>
           </div>
-
-          <div className="mt-20 grid grid-cols-1 items-center gap-12 lg:mt-28 lg:grid-cols-2 lg:gap-20">
-            <Reveal className="relative aspect-[4/3] overflow-hidden bg-wash lg:aspect-[5/4]">
-              <Image
-                src="/images/technicians-diagnostic-device.jpg"
-                alt="Techniciens Maintenance Assistance Plus lors d'un diagnostic d'équipement"
-                fill
-                sizes="(min-width: 1024px) 45vw, 100vw"
-                className="object-cover"
-              />
-            </Reveal>
-            <Reveal delay={120} className="flex flex-col gap-6">
-              <h2 className="text-[clamp(1.875rem,3.2vw,2.75rem)] font-bold leading-[1.12] tracking-[-0.01em] text-navy text-balance">
-                <HighlightText title={introduction.title} highlight="Notre expertise." />
-              </h2>
-              {introduction.body.map((p) => (
-                <p key={p} className="max-w-[58ch] text-[17px] leading-relaxed text-ink/85">
-                  {p}
-                </p>
-              ))}
-            </Reveal>
-          </div>
+          <FigureLinks items={keyFigures} className="mt-16 lg:mt-24" />
         </Container>
       </section>
 
-      <KeyFigures />
-
-      {/* EXPERTISES — image cards */}
-      <section className="bg-wash py-24 sm:py-32">
+      {/* DIMENSIONS — wide photo + three numbered columns */}
+      <section className="bg-surface py-section-y text-text">
         <Container>
-          <Reveal>
-            <SectionIntro
-              align="center"
-              eyebrow={homeSections.expertises.eyebrow}
-              title={homeSections.expertises.title}
-              highlight="une seule équipe."
-              lead={homeSections.expertises.lead}
-            />
-          </Reveal>
-          <ul className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-6">
-            {expertises.map((exp, i) => (
-              <Reveal as="li" key={exp.slug} delay={(i % 4) * 90}>
-                <ImageCard
-                  href={expertiseHref(exp.slug)}
-                  image={exp.image}
-                  title={exp.name}
-                  label={exp.index}
-                  sizes="(min-width: 1024px) 23vw, (min-width: 640px) 46vw, 100vw"
-                  className="aspect-[4/5]"
-                />
-              </Reveal>
-            ))}
-          </ul>
-          <div className="mt-12 flex justify-center">
-            <ButtonLink href={ctas.discoverExpertises.href}>{ctas.discoverExpertises.label}</ButtonLink>
-          </div>
+          <SectionHeader eyebrow={dimensionsIntro.eyebrow} title={dimensionsIntro.title} />
+          <ParallaxImage
+            src={homeSections.dimensions.image}
+            alt={homeSections.dimensions.imageAlt}
+            sizes="(min-width: 1680px) 1680px, 100vw"
+            className="aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]"
+          />
+          <NumberedColumns
+            items={dimensions.map((d) => ({ index: d.index, title: d.title, body: d.body }))}
+            className="mt-12 md:grid-cols-3 lg:mt-16"
+          />
         </Container>
       </section>
 
-      {/* MAINTENANCE — deep gradient block */}
-      <section className="bg-deep py-24 text-white sm:py-32">
+      {/* EXPERTISES — index with sticky photo */}
+      <section className="bg-background py-section-y text-text">
         <Container>
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-            <Reveal>
-              <SectionIntro
-                tone="dark"
-                eyebrow={homeSections.maintenance.eyebrow}
-                title={homeSections.maintenance.title}
-                highlight="plutôt que subir."
-                lead={homeSections.maintenance.lead}
-              />
-            </Reveal>
-            <Reveal delay={120} className="shrink-0">
-              <ButtonLink href={ctas.discoverMaintenance.href} tone="dark">
-                {ctas.discoverMaintenance.label}
-              </ButtonLink>
-            </Reveal>
-          </div>
+          <SectionHeader
+            eyebrow={homeSections.expertises.eyebrow}
+            title={homeSections.expertises.title}
+            lead={homeSections.expertises.lead}
+            action={<TextLink href={ctas.discoverExpertises.href}>{ctas.discoverExpertises.label}</TextLink>}
+          />
+          <ExpertiseIndex items={expertises} />
+        </Container>
+      </section>
 
-          <ol className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
-            {maintenanceTypes.map((type, i) => (
-              <Reveal as="li" key={type.title} delay={i * 90} className="flex flex-col bg-white p-7 text-ink lg:p-8">
-                <span className="text-[44px] font-bold leading-none text-brand">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="mt-6 text-[22px] font-bold text-navy">{type.title}</h3>
-                <p className="mt-3 text-[16px] leading-relaxed text-ink/80">{type.description}</p>
+      {/* MAINTENANCE — dark photo carousel */}
+      <section className="theme-dark overflow-hidden bg-background py-section-y text-text">
+        <CardCarousel
+          id="maintenance-track"
+          label={homeSections.maintenance.eyebrow}
+          eyebrow={homeSections.maintenance.eyebrow}
+          title={homeSections.maintenance.title}
+          lead={homeSections.maintenance.lead}
+          action={<TextLink href={ctas.discoverMaintenance.href}>{ctas.discoverMaintenance.label}</TextLink>}
+          items={maintenanceTypes.map((type, i) => ({
+            key: type.title,
+            index: String(i + 1).padStart(2, "0"),
+            title: type.title,
+            description: type.description,
+            image: type.image,
+            href: routes.maintenance,
+          }))}
+        />
+      </section>
+
+      {/* APPROACH — scroll-filled timeline */}
+      <section className="bg-background py-section-y text-text">
+        <Container>
+          <SectionHeader
+            eyebrow={homeSections.approach.eyebrow}
+            title={homeSections.approach.title}
+            lead={homeSections.approach.lead}
+            action={<TextLink href={ctas.ourApproach.href}>{ctas.ourApproach.label}</TextLink>}
+          />
+          <ProcessTimeline steps={processSteps} className="lg:grid-cols-4" />
+        </Container>
+      </section>
+
+      {/* QSE — featured image with overlaid standards */}
+      <section className="bg-surface py-section-y text-text">
+        <Container>
+          <SectionHeader
+            eyebrow={qse.eyebrow}
+            title={qse.title}
+            action={<TextLink href={ctas.discoverQse.href}>{ctas.discoverQse.label}</TextLink>}
+          />
+          <article aria-labelledby="qse-feature" className="relative">
+            <ParallaxImage
+              src={qse.feature.image}
+              alt={qse.feature.imageAlt}
+              sizes="(min-width: 1680px) 1680px, 100vw"
+              className="aspect-[4/3] md:aspect-[16/9] xl:aspect-[2/1]"
+              imageClassName="object-[50%_40%]"
+            >
+              <div className="pointer-events-none absolute inset-0 hidden bg-linear-to-t from-black/90 from-0% via-black/65 via-55% to-black/0 to-100% lg:block" />
+            </ParallaxImage>
+
+            <div className="mt-8 grid grid-cols-1 gap-8 lg:pointer-events-none lg:absolute lg:inset-x-0 lg:bottom-0 lg:mt-0 lg:grid-cols-12 lg:items-end lg:gap-6 lg:p-10 xl:p-12">
+              <Reveal className="lg:pointer-events-auto lg:col-span-7">
+                <p className="eyebrow text-accent lg:text-white">{qseCertifiedBy}</p>
+                <h3 id="qse-feature" className="mt-3 max-w-2xl text-h2 font-semibold text-balance lg:text-white">
+                  {qse.feature.title}
+                </h3>
               </Reveal>
-            ))}
-          </ol>
-
-          <Reveal className="mt-6 flex flex-col gap-3 border border-white/20 bg-white/5 p-6 sm:flex-row sm:items-center sm:justify-between lg:px-8">
-            <span className="flex items-center gap-3 text-[17px] text-white/90">
-              <ClockIcon size={22} className="text-brand-light" />
-              {homeSections.maintenance.availabilityLabel}
-            </span>
-            <span className="text-[40px] font-bold leading-none">{homeSections.maintenance.availabilityValue}</span>
-          </Reveal>
+              <Reveal className="lg:col-span-5">
+                <dl className="grid grid-cols-3 gap-x-4 gap-y-6 border-t sm:gap-x-8 border-border pt-6 lg:border-white/25">
+                  {qseStandards.map((std) => (
+                    <div key={std.code} className="flex flex-col gap-1.5">
+                      <dt className="eyebrow order-2 text-muted lg:text-white/75">{std.short}</dt>
+                      <dd className="tabular order-1 text-h2 font-light whitespace-nowrap text-text lg:text-white">
+                        <span className="sr-only">{std.code}</span>
+                        <span aria-hidden>{std.code.replace("ISO ", "")}</span>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
+            </div>
+          </article>
         </Container>
       </section>
 
       {/* COMMITMENTS */}
-      <section className="bg-white py-24 sm:py-32">
+      <section className="bg-background py-section-y text-text">
         <Container>
-          <Reveal>
-            <SectionIntro
-              align="center"
-              eyebrow={homeSections.commitments.eyebrow}
-              title={homeSections.commitments.title}
-              highlight="chaque collaboration."
-            />
-          </Reveal>
-          <ul className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:mt-16 lg:grid-cols-4 lg:gap-6">
-            {commitments.map((item, i) => (
-              <Reveal
-                as="li"
-                key={item.index}
-                delay={(i % 4) * 90}
-                className="flex flex-col border border-line border-t-[3px] border-t-brand bg-white p-7"
-              >
-                <span className="text-[15px] font-bold text-brand">{item.index}</span>
-                <h3 className="mt-4 text-[20px] font-bold leading-snug text-navy">{item.title}</h3>
-                <p className="mt-3 text-[15px] leading-relaxed text-ink/80">{item.description}</p>
+          <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-8 lg:col-span-5">
+              <Reveal>
+                <Eyebrow>{homeSections.commitments.eyebrow}</Eyebrow>
               </Reveal>
-            ))}
-            <Reveal as="li" delay={270}>
-              <Link
-                href={routes.contact}
-                className="group flex h-full min-h-56 flex-col justify-between bg-brand p-7 text-white transition-colors hover:bg-brand-dark"
-              >
-                <span className="text-[22px] font-bold leading-snug text-balance">{finalCta.title}</span>
-                <span className="flex items-center gap-2 text-[15px] font-bold">
-                  {finalCta.cta.label}
-                  <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" />
-                </span>
-              </Link>
-            </Reveal>
-          </ul>
-        </Container>
-      </section>
-
-      {/* APPROACH */}
-      <section className="bg-wash py-24 sm:py-32">
-        <Container>
-          <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
-            <Reveal>
-              <SectionIntro
-                eyebrow={homeSections.approach.eyebrow}
-                title={homeSections.approach.title}
-                highlight="Une méthode éprouvée,"
-              />
-            </Reveal>
-            <Reveal delay={120} className="shrink-0">
-              <ButtonLink href={ctas.ourApproach.href}>{ctas.ourApproach.label}</ButtonLink>
-            </Reveal>
-          </div>
-
-          <div className="relative mt-16">
-            <div aria-hidden className="brand-line absolute top-[27px] right-0 left-0 hidden h-[2px] opacity-60 lg:block" />
-            <ol className="relative grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
-            {processSteps.map((step, i) => (
-              <Reveal as="li" key={step.index} delay={i * 110} className="relative flex flex-col">
-                <span className="relative z-10 flex h-14 w-14 items-center justify-center bg-brand text-[20px] font-bold text-white">
-                  {step.index}
-                </span>
-                <h3 className="mt-7 text-[21px] font-bold leading-snug text-navy">{step.title}</h3>
-                <p className="mt-3 text-[15px] leading-relaxed text-ink/80">{step.description}</p>
+              <Reveal as="h2" className="mt-5 max-w-xl text-h1 font-semibold text-balance">
+                {homeSections.commitments.title}
               </Reveal>
-            ))}
-            </ol>
-          </div>
-        </Container>
-      </section>
-
-      {/* QSE */}
-      <section className="bg-white py-24 sm:py-32">
-        <Container className="grid grid-cols-1 items-center gap-16 lg:grid-cols-[1fr_1.05fr] lg:gap-20">
-          <Reveal className="flex flex-col gap-10">
-            <SectionIntro eyebrow={homeSections.qse.eyebrow} title={homeSections.qse.title} highlight="Qualité," />
-            <ul className="flex flex-col">
-              {qseStandards.map((std) => (
-                <li key={std.code} className="grid grid-cols-[112px_1fr] gap-6 border-t border-line py-5 last:border-b">
-                  <span className="text-[17px] font-bold text-brand">{std.code}</span>
-                  <span>
-                    <span className="block text-[17px] font-bold text-navy">{std.title}</span>
-                    <span className="mt-1 block text-[15px] leading-relaxed text-ink/80">{std.description}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-              <span className="text-[15px] font-bold text-navy">{qseCertifiedBy}</span>
-              <ButtonLink href={routes.qse} variant="text">
-                {homeSections.qse.eyebrow}
-              </ButtonLink>
+              <Reveal as="p" className="mt-6 max-w-sm text-lg text-muted">
+                {homeSections.commitments.lead}
+              </Reveal>
             </div>
-          </Reveal>
-
-          <Reveal delay={150} className="grid grid-cols-3 gap-3 sm:gap-5">
-            {qseCertificates.map((cert, i) => (
-              <div
-                key={cert.code}
-                className={`relative aspect-[3/4] overflow-hidden border border-line bg-white shadow-[0_24px_48px_-28px_rgb(12_47_64/0.45)] ${i === 1 ? "lg:-translate-y-8" : ""}`}
-              >
-                <Image src={cert.image} alt={`Certificat Bureau Veritas — ${cert.standard}`} fill sizes="(min-width: 1024px) 16vw, 30vw" className="object-cover object-top" />
-              </div>
-            ))}
-          </Reveal>
+            <NumberedList items={commitments.map((c) => c.title)} className="col-span-4 md:col-span-8 lg:col-span-6 lg:col-start-7 lg:self-end" />
+          </div>
         </Container>
       </section>
-
-      <ContactInvite />
     </>
   );
 }

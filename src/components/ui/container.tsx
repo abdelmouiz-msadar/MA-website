@@ -10,9 +10,5 @@ export function Container({
   children: ReactNode;
   as?: ElementType;
 }) {
-  return (
-    <Tag className={cn("mx-auto w-full max-w-[var(--container-max)] px-[var(--gutter)]", className)}>
-      {children}
-    </Tag>
-  );
+  return <Tag className={cn("mx-auto w-full max-w-container px-gutter", className)}>{children}</Tag>;
 }

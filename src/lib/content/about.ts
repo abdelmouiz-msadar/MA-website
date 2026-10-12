@@ -15,8 +15,12 @@ export const positioning = {
   ],
 };
 
-export const missionQuote =
-  "Vous offrir une tranquillité d'esprit totale pour vous permettre de vous concentrer sur votre cœur de métier.";
+export const mission = {
+  eyebrow: "Notre mission",
+  quote: "Vous offrir une tranquillité d'esprit totale pour vous permettre de vous concentrer sur votre cœur de métier.",
+  image: "/images/hero-ducting-inspection.jpg",
+  imageAlt: "Techniciens Maintenance Assistance Plus lors d'une inspection d'installation CVC",
+};
 
 export const proximityBlock = {
   expertise: {
@@ -68,8 +72,7 @@ export const continuity = {
   imageAlt: "Techniciens Maintenance Assistance Plus lors d'un diagnostic d'équipement",
 };
 
-export const aboutCta = {
-  title: "Découvrir nos expertises.",
-  body: "Huit domaines techniques, une seule équipe — de l'électricité aux fluides médicaux.",
-  cta: { label: "Découvrir nos expertises", href: "/expertises" },
+export const dimensionsIntro = {
+  eyebrow: "Énergie, confort, bien-être",
+  title: "Des dimensions interconnectées, pas des promesses isolées.",
 };

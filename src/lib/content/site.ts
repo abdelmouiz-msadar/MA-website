@@ -4,6 +4,8 @@ export const hero = {
   lead: "Maintenance Assistance Plus accompagne les entreprises dans la gestion, la maintenance et l'optimisation de leurs infrastructures, avec une équipe technique disponible 24/7.",
   primaryCta: { label: "Découvrir nos expertises", href: "/expertises" },
   secondaryCta: { label: "Nous contacter", href: "/contact" },
+  /** Short facts along the bottom rule of the hero. */
+  pillars: ["Support & astreinte 24/7", "8 domaines techniques", "ISO 9001 · 45001 · 14001"],
 };
 
 export const introduction = {
@@ -14,6 +16,11 @@ export const introduction = {
     "Nous nous engageons à offrir des solutions sur mesure, alliant expertise technique, innovation et proximité. Notre mission : vous offrir une tranquillité d'esprit totale pour vous permettre de vous concentrer sur votre cœur de métier.",
     "Notre philosophie repose sur une relation de proximité et de confiance. Grâce à notre collaboration, vous vous recentrez sur vos activités principales et allégez votre structure, en particulier les fonctions support, pour gagner en flexibilité et en efficience.",
   ],
+  link: "Découvrir MA+",
+  scope: {
+    label: "Nos interventions couvrent",
+    items: ["Aménagements", "Rénovation", "Maintenance", "Ingénierie technique"],
+  },
 };
 
 export type Commitment = {
@@ -67,6 +74,7 @@ export const commitments: Commitment[] = [
 export type MaintenanceType = {
   title: string;
   description: string;
+  image: string;
 };
 
 export const maintenanceTypes: MaintenanceType[] = [
@@ -74,19 +82,23 @@ export const maintenanceTypes: MaintenanceType[] = [
     title: "Préventive",
     description:
       "Interventions planifiées pour éviter les pannes et prolonger la durée de vie des équipements.",
+    image: "/images/technician-hands-on.jpg",
   },
   {
     title: "Corrective",
     description: "Réparation rapide des équipements en cas de dysfonctionnement.",
+    image: "/images/domains/maintenance-intervention.jpg",
   },
   {
     title: "Prédictive",
     description:
       "Capteurs et analyse de données pour anticiper les pannes avant qu'elles ne surviennent.",
+    image: "/images/domains/cfa-control-cabinet.jpg",
   },
   {
     title: "Réglementaire",
     description: "Vérification des équipements conformément aux obligations légales et normes en vigueur.",
+    image: "/images/technicians-diagnostic-device.jpg",
   },
 ];
 
@@ -147,6 +159,8 @@ export const processSteps: ProcessStep[] = [
 
 export type QseStandard = {
   code: string;
+  /** One-word pillar, for compact figures. */
+  short: string;
   title: string;
   description: string;
 };
@@ -154,18 +168,21 @@ export type QseStandard = {
 export const qseStandards: QseStandard[] = [
   {
     code: "ISO 9001",
+    short: "Qualité",
     title: "Qualité et excellence opérationnelle",
     description:
       "Application de standards élevés pour prolonger la durée de vie des équipements et optimiser leur performance, conformément à la norme internationale ISO 9001.",
   },
   {
     code: "ISO 45001",
+    short: "Sécurité",
     title: "Sécurité et prévention des risques",
     description:
       "Protocoles stricts de prévention des risques garantissant la sécurité des collaborateurs et des usagers, conformément à la norme internationale ISO 45001.",
   },
   {
     code: "ISO 14001",
+    short: "Environnement",
     title: "Responsabilité environnementale",
     description:
       "Réduction de l'empreinte carbone grâce à des pratiques durables — optimisation énergétique, tri et recyclage des déchets — conformément à la norme internationale ISO 14001.",
@@ -175,6 +192,7 @@ export const qseStandards: QseStandard[] = [
 export const qseCertifiedBy = "Certifié Bureau Veritas Certification";
 
 export const finalCta = {
+  eyebrow: "Vos installations",
   title: "Parlons de vos installations.",
   body: "Un besoin en maintenance, facility management ou infrastructure technique ? Échangeons sur vos enjeux.",
   cta: { label: "Nous contacter", href: "/contact" },

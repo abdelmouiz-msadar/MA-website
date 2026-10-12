@@ -2,6 +2,8 @@ export const qseHero = {
   eyebrow: "QSE",
   title: "Qualité, sécurité, environnement.",
   lead: "Dans une démarche d'amélioration continue, nous appliquons un système de management intégré Qualité, Sécurité et Environnement, conforme aux exigences des normes internationales en vigueur.",
+  image: "/images/technicians-diagnostic-device.jpg",
+  certificatesTitle: "Trois normes, un système intégré.",
 };
 
 export type QseCertificate = {
