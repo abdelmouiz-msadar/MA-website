@@ -14,7 +14,7 @@ import { ui } from "@/lib/content/ui";
 import { cn } from "@/lib/utils";
 
 const MENU_ID = "menu-mobile";
-const desktopNav = primaryNav.filter((item) => item.href !== routes.home && item.href !== routes.contact);
+const desktopNav = primaryNav.filter((item) => item.href !== routes.home);
 const mobileNav = primaryNav.filter((item) => item.href !== routes.home);
 
 const isActive = (pathname: string, href: string) => pathname === href || pathname.startsWith(`${href}/`);
@@ -22,21 +22,12 @@ const isActive = (pathname: string, href: string) => pathname === href || pathna
 export function SiteHeader() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
 
-  // Solid once the page moves; slides away while scrolling down, returns on the way up.
+  // Stays in place at all times; turns into a frosted white bar once the page moves.
   useEffect(() => {
-    let last = window.scrollY;
-    const onScroll = () => {
-      const y = window.scrollY;
-      setScrolled(y > 48);
-      const delta = y - last;
-      if (Math.abs(delta) < 8) return;
-      setHidden(delta > 0 && y > 320);
-      last = y;
-    };
+    const onScroll = () => setScrolled(window.scrollY > 40);
     const frame = requestAnimationFrame(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
@@ -71,115 +62,76 @@ export function SiteHeader() {
     };
   }, [menuOpen]);
 
-  // Every page opens on a dark photographic hero, so the bar starts in its light-on-dark state.
-  const onDark = !scrolled || menuOpen;
+  // Every page opens on a dark photographic hero, so the bar starts light-on-dark.
   const solid = scrolled && !menuOpen;
 
   return (
     <>
       <header
-        onFocusCapture={() => setHidden(false)}
         className={cn(
-          "fixed inset-x-0 top-0 z-50 border-b transition-[transform,background-color,border-color] duration-500 ease-editorial",
-          solid ? "border-border bg-background/90 backdrop-blur-md" : "border-transparent bg-transparent",
-          hidden && !menuOpen && "-translate-y-full",
-          onDark && "focus-light",
+          "nav-enter fixed inset-x-0 top-0 z-50 transition-[background-color,border-color] duration-500 ease-reveal",
+          solid
+            ? "border-b border-ink/10 bg-white/85 backdrop-blur-md"
+            : cn("focus-light", !menuOpen && "bg-linear-to-b from-black/45 via-black/15 to-transparent"),
         )}
       >
-        <div className="px-gutter">
-          <div className="mx-auto flex h-20 max-w-container items-center justify-between gap-8 md:h-24">
-            <Link href={routes.home} aria-label={ui.homeAria} onClick={closeMenu} className="-my-2 flex shrink-0 items-center py-2">
-              <span className="relative block">
-                <Image src="/brand/ma-plus-logo.svg" alt="" width={210} height={46} preload className="h-[38px] w-auto md:h-[46px]" />
-                <Image
-                  src="/brand/ma-plus-logo-white.svg"
-                  alt=""
-                  width={210}
-                  height={46}
-                  preload
-                  className={cn("absolute inset-0 h-full w-auto transition-opacity duration-500", !onDark && "opacity-0")}
-                />
-              </span>
-            </Link>
+        <div className="mx-auto flex h-24 max-w-container items-center justify-between gap-8 px-gutter">
+          <Link href={routes.home} aria-label={ui.homeAria} onClick={closeMenu} className="flex shrink-0 items-center">
+            <span className="relative block">
+              <Image src="/brand/ma-plus-logo.svg" alt="" width={210} height={46} preload className="h-10 w-auto md:h-11" />
+              <Image
+                src="/brand/ma-plus-logo-white.svg"
+                alt=""
+                width={210}
+                height={46}
+                preload
+                className={cn("absolute inset-0 h-full w-auto transition-opacity duration-500", solid && "opacity-0")}
+              />
+            </span>
+          </Link>
 
-            <nav aria-label={ui.mainNav} className="hidden items-center gap-10 lg:flex">
-              <ul className="flex items-center gap-8 xl:gap-9">
-                {desktopNav.map((item) => {
-                  const active = isActive(pathname, item.href);
-                  return (
-                    <li key={item.href}>
-                      <Link
-                        href={item.href}
-                        aria-current={active ? "page" : undefined}
-                        className={cn(
-                          "group relative block py-2 text-sm font-medium transition-colors duration-300",
-                          onDark ? "text-white/85 hover:text-white" : "text-muted hover:text-text",
-                          active && (onDark ? "text-white!" : "text-text!"),
-                        )}
-                      >
-                        {item.label}
-                        <span
-                          aria-hidden
-                          className={cn(
-                            "absolute bottom-0.5 left-0 h-px w-full origin-left transition-transform duration-500 ease-editorial",
-                            active ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100",
-                            onDark ? "bg-white" : "bg-accent",
-                          )}
-                        />
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-              <Link
-                href={routes.contact}
-                aria-current={pathname === routes.contact ? "page" : undefined}
-                className={cn(
-                  "group relative isolate inline-flex min-h-[44px] items-center gap-2 overflow-hidden px-5 text-sm font-semibold transition-colors duration-300 ease-editorial",
-                  onDark ? "bg-paper text-ink hover:text-paper" : "bg-ink text-paper",
-                )}
-              >
-                <span
-                  aria-hidden
-                  className="absolute inset-0 -z-10 origin-left scale-x-0 bg-green transition-transform duration-500 ease-editorial group-hover:scale-x-100"
-                />
-                {primaryNav.find((item) => item.href === routes.contact)?.label}
-                <ArrowUpRight
-                  size={14}
-                  className="transition-transform duration-500 ease-editorial group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-                />
-              </Link>
-            </nav>
+          <nav
+            aria-label={ui.mainNav}
+            className={cn("hidden lg:flex lg:items-center lg:gap-8 xl:gap-12", solid ? "text-ink" : "text-white")}
+          >
+            {desktopNav.map((item) => {
+              const active = isActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "relative py-2 text-sm font-bold tracking-wide uppercase transition-colors after:absolute after:bottom-1 after:left-0 after:h-px after:transition-[width] after:duration-300 hover:after:w-full",
+                    solid ? "after:bg-green hover:text-green" : "after:bg-green-bright hover:text-green-bright",
+                    active ? cn("after:w-full", solid ? "text-green" : "text-green-bright") : "after:w-0",
+                  )}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
 
-            <button
-              ref={menuButtonRef}
-              type="button"
-              onClick={() => setMenuOpen((open) => !open)}
-              aria-expanded={menuOpen}
-              aria-controls={MENU_ID}
-              aria-label={menuOpen ? ui.closeMenu : ui.openMenu}
-              className={cn(
-                "-mr-2 flex h-11 items-center gap-3 px-2 text-sm font-semibold transition-colors duration-300 lg:hidden",
-                onDark ? "text-white" : "text-text",
-              )}
-            >
-              <span>{menuOpen ? ui.close : ui.menu}</span>
-              <span aria-hidden className="relative flex h-3 w-6 flex-col justify-between">
-                <span
-                  className={cn(
-                    "h-px w-full origin-center bg-current transition-transform duration-300 ease-in-out",
-                    menuOpen && "translate-y-[5.5px] rotate-45",
-                  )}
-                />
-                <span
-                  className={cn(
-                    "ml-auto h-px origin-center bg-current transition-[transform,width] duration-300 ease-in-out",
-                    menuOpen ? "w-full -translate-y-[5.5px] -rotate-45" : "w-2/3",
-                  )}
-                />
-              </span>
-            </button>
-          </div>
+          <button
+            ref={menuButtonRef}
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-expanded={menuOpen}
+            aria-controls={MENU_ID}
+            aria-label={menuOpen ? ui.closeMenu : ui.openMenu}
+            className={cn("-mr-3 flex min-h-11 items-center gap-2 px-3 lg:hidden", solid ? "text-ink" : "text-white")}
+          >
+            <span aria-hidden className="flex w-6 flex-col gap-[5px]">
+              <span
+                className={cn("h-[2px] w-full bg-current transition-transform duration-300", menuOpen && "translate-y-[3.5px] rotate-45")}
+              />
+              <span
+                className={cn("h-[2px] w-full bg-current transition-transform duration-300", menuOpen && "-translate-y-[3.5px] -rotate-45")}
+              />
+            </span>
+            <span className="text-xs font-bold tracking-widest uppercase">{menuOpen ? ui.close : ui.menu}</span>
+          </button>
         </div>
       </header>
 

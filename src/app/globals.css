@@ -9,6 +9,8 @@
   --ink: #111111;
   --paper: #fafafa;
   --green: #126342;
+  /* Lighter tint of the brand green, only for text and rules over dark photography. */
+  --green-bright: #4ca37c;
 
   --background: var(--paper);
   --surface: #f2f2f2;
@@ -41,6 +43,7 @@
   --color-ink: var(--ink);
   --color-paper: var(--paper);
   --color-green: var(--green);
+  --color-green-bright: var(--green-bright);
   --color-stone: #e6e6e6;
 
   --font-sans: var(--font-manrope), Helvetica, Arial, sans-serif;
@@ -158,6 +161,18 @@ body {
   100% {
     transform: translateY(200%);
   }
+}
+
+/* Header entrance on first load. */
+@keyframes nav-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.75rem);
+  }
+}
+
+.nav-enter {
+  animation: nav-in 0.5s var(--ease-reveal) both;
 }
 
 /* Scroll reveal — content rises 28px and fades in once it enters the viewport. */
