@@ -1,10 +1,7 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import { Breadcrumb, type Crumb } from "@/components/ui/breadcrumb";
 import { Container } from "@/components/ui/container";
 import { Eyebrow, HighlightText } from "@/components/ui/heading";
-import { HomeIcon } from "@/components/ui/icons";
-
-export type Crumb = { label: string; href?: string };
 
 /** Interior page hero — pale wash, centered breadcrumb, large split-colour headline (ENGIE interior pattern). */
 export function PageHero({
@@ -25,34 +22,7 @@ export function PageHero({
   return (
     <section className="bg-wash pt-32 pb-16 sm:pb-20 lg:pt-48 lg:pb-24">
       <Container className="flex flex-col items-center text-center">
-        <nav aria-label="Fil d'Ariane">
-          <ol className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-[14px] text-ink">
-            <li>
-              <Link href="/" className="flex items-center text-navy hover:text-brand" aria-label="Accueil">
-                <HomeIcon size={16} />
-              </Link>
-            </li>
-            {crumbs.map((crumb, i) => {
-              const last = i === crumbs.length - 1;
-              return (
-                <li key={crumb.label} className="flex items-center gap-2">
-                  <span aria-hidden className="text-muted">
-                    /
-                  </span>
-                  {crumb.href && !last ? (
-                    <Link href={crumb.href} className="hover:text-brand">
-                      {crumb.label}
-                    </Link>
-                  ) : (
-                    <span aria-current={last ? "page" : undefined} className={last ? "font-bold text-navy" : undefined}>
-                      {crumb.label}
-                    </span>
-                  )}
-                </li>
-              );
-            })}
-          </ol>
-        </nav>
+        <Breadcrumb crumbs={crumbs} center />
 
         {eyebrow ? <Eyebrow className="mt-10">{eyebrow}</Eyebrow> : null}
         <h1

@@ -9,7 +9,7 @@ import { HomeHero } from "@/components/sections/home-hero";
 import { Statement } from "@/components/sections/statement";
 import { KeyFigures } from "@/components/sections/key-figures";
 import { ImageCard } from "@/components/sections/image-card";
-import { ClosingCta } from "@/components/sections/closing-cta";
+import { ContactInvite } from "@/components/sections/contact-invite";
 import { expertises } from "@/lib/content/expertises";
 import { expertiseHref, routes } from "@/lib/content/routes";
 import { ctas } from "@/lib/content/cta";
@@ -249,11 +249,7 @@ export default function Home() {
         </Container>
       </section>
 
-      <ClosingCta title={finalCta.title} body={finalCta.body} showNeeds>
-        <ButtonLink href={finalCta.cta.href} variant="solid">
-          {finalCta.cta.label}
-        </ButtonLink>
-      </ClosingCta>
+      <ContactInvite />
     </>
   );
 }

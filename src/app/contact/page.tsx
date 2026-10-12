@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Suspense } from "react";
+import { AvailabilityBadge } from "@/components/ui/availability-badge";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Container } from "@/components/ui/container";
-import { MailIcon, PhoneIcon, PinIcon } from "@/components/ui/icons";
-import { PageHero } from "@/components/sections/page-hero";
-import { ContactForm } from "@/components/sections/contact-form";
+import { HighlightText } from "@/components/ui/heading";
+import { Reveal } from "@/components/ui/reveal";
+import { ContactBuilder, ContactBuilderFromUrl } from "@/components/sections/contact-builder";
+import { ContactChannels } from "@/components/sections/contact-channels";
 import { contactHero } from "@/lib/content/contact";
-import { contactInfo } from "@/lib/content/navigation";
-import { contactLabels } from "@/lib/content/pages";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -14,67 +16,44 @@ export const metadata: Metadata = {
     "Contactez Maintenance Assistance Plus pour vos besoins en Facility Management, maintenance multi-technique ou infrastructure technique à Mohammedia, Maroc.",
 };
 
-const channels = [
-  {
-    icon: PinIcon,
-    label: contactLabels.address,
-    value: (
-      <>
-        {contactInfo.companyName}
-        {contactInfo.addressLines.map((line) => (
-          <span key={line} className="block">
-            {line}
-          </span>
-        ))}
-      </>
-    ),
-  },
-  {
-    icon: PhoneIcon,
-    label: contactLabels.phone,
-    value: (
-      <a href={`tel:${contactInfo.phoneHref}`} className="hover:text-brand">
-        {contactInfo.phone}
-      </a>
-    ),
-  },
-  {
-    icon: MailIcon,
-    label: contactLabels.email,
-    value: (
-      <a href={`mailto:${contactInfo.email}`} className="break-words hover:text-brand">
-        {contactInfo.email}
-      </a>
-    ),
-  },
-];
-
 export default function ContactPage() {
   return (
     <>
-      <PageHero crumbs={[{ label: contactHero.eyebrow }]} title={contactHero.title} highlight="votre infrastructure." lead={contactHero.lead} />
+      <section className="relative overflow-hidden bg-navy-deep pt-32 pb-44 text-white sm:pb-48 lg:pt-44 lg:pb-60">
+        <Image
+          src="/images/team-cta-inspection.jpg"
+          alt=""
+          fill
+          preload
+          sizes="100vw"
+          className="hero-zoom object-cover object-[50%_35%]"
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(8_32_45/0.86)_0%,rgb(8_32_45/0.72)_45%,rgb(8_32_45/0.94)_100%)]" />
 
-      <section className="bg-white py-20 sm:py-24">
-        <Container className="grid grid-cols-1 gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <ul className="flex flex-col gap-4">
-            {channels.map(({ icon: Icon, label, value }) => (
-              <li key={label} className="flex gap-5 border border-line p-6">
-                <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-brand text-white">
-                  <Icon size={22} />
-                </span>
-                <div className="flex min-w-0 flex-col gap-1.5">
-                  <span className="text-[15px] font-bold text-navy">{label}</span>
-                  <span className="text-[16px] leading-relaxed text-ink">{value}</span>
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <div className="bg-wash p-6 sm:p-10">
-            <Suspense fallback={<div className="min-h-[560px]" />}>
-              <ContactForm />
-            </Suspense>
+        <Container className="relative">
+          <Breadcrumb crumbs={[{ label: contactHero.eyebrow }]} tone="dark" />
+          <div className="mt-10 grid grid-cols-1 gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
+            <Reveal className="flex flex-col items-start gap-7">
+              <AvailabilityBadge />
+              <h1 className="text-[clamp(2.5rem,5.6vw,4.75rem)] font-bold leading-[1.04] tracking-[-0.015em] text-balance">
+                <HighlightText title={contactHero.title} highlight="votre infrastructure." tone="dark" />
+              </h1>
+              <p className="max-w-[50ch] text-[18px] leading-relaxed text-white/85 sm:text-[20px]">{contactHero.lead}</p>
+            </Reveal>
+            <Reveal delay={150}>
+              <ContactChannels />
+            </Reveal>
           </div>
+        </Container>
+      </section>
+
+      <section className="bg-wash pb-24 sm:pb-32">
+        <Container className="relative z-10 -mt-28 sm:-mt-32 lg:-mt-40">
+          <Reveal>
+            <Suspense fallback={<ContactBuilder />}>
+              <ContactBuilderFromUrl />
+            </Suspense>
+          </Reveal>
         </Container>
       </section>
     </>
