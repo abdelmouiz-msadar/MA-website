@@ -78,12 +78,12 @@ export function SiteHeader() {
         <div className="mx-auto flex h-24 max-w-container items-center justify-between gap-8 px-gutter">
           <Link href={routes.home} aria-label={ui.homeAria} onClick={closeMenu} className="flex shrink-0 items-center">
             <span className="relative block">
-              <Image src="/brand/ma-plus-logo.svg" alt="" width={210} height={46} preload className="h-10 w-auto md:h-11" />
+              <Image src="/brand/ma-plus-logo.png" alt="" width={194} height={44} preload className="h-10 w-auto md:h-11" />
               <Image
-                src="/brand/ma-plus-logo-white.svg"
+                src="/brand/ma-plus-logo-white.png"
                 alt=""
-                width={210}
-                height={46}
+                width={194}
+                height={44}
                 preload
                 className={cn("absolute inset-0 h-full w-auto transition-opacity duration-500", solid && "opacity-0")}
               />

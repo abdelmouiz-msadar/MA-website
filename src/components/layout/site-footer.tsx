@@ -51,7 +51,7 @@ export function SiteFooter() {
 
       <Container className="grid grid-cols-2 gap-x-6 gap-y-12 py-section-y-sm md:grid-cols-12">
         <div className="col-span-2 md:col-span-12 lg:col-span-4">
-          <Image src="/brand/ma-plus-logo-white.svg" alt={contactInfo.companyName} width={210} height={46} className="h-[46px] w-auto" />
+          <Image src="/brand/ma-plus-logo-white.png" alt={contactInfo.companyName} width={203} height={46} className="h-[46px] w-auto" />
           <p className="mt-8 max-w-sm text-h3 font-semibold">{footerContent.motto}</p>
           <p className="mt-4 max-w-sm text-sm text-muted">{footerContent.tagline}</p>
         </div>
