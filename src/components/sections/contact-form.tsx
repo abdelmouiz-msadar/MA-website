@@ -1,8 +1,9 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useId, useRef, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
+import { ChoiceChip, FieldsetLegend, FloatingField } from "@/components/ui/form-fields";
 import { Reveal } from "@/components/ui/reveal";
 import { contactForm, isNeed, needOptions } from "@/lib/content/contact";
 import { contactInfo } from "@/lib/content/navigation";
@@ -83,7 +84,7 @@ export function ContactForm({ initialNeeds = [] }: { initialNeeds?: string[] }) 
       </Reveal>
 
       <Reveal as="fieldset" className="min-w-0">
-        <Legend>{contactForm.sections.contact}</Legend>
+        <FieldsetLegend>{contactForm.sections.contact}</FieldsetLegend>
         <div className="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
           <FloatingField label={contactForm.fields.nom} required error={errors.nom}>
             {(props) => <input {...props} type="text" name="nom" autoComplete="name" maxLength={120} value={values.nom} onChange={setField("nom")} />}
@@ -115,37 +116,22 @@ export function ContactForm({ initialNeeds = [] }: { initialNeeds?: string[] }) 
       </Reveal>
 
       <Reveal as="fieldset" className="min-w-0">
-        <Legend>{contactForm.sections.project}</Legend>
+        <FieldsetLegend>{contactForm.sections.project}</FieldsetLegend>
         <fieldset>
           <legend className="text-sm font-medium text-text">
             {contactForm.needsLegend} <span className="font-normal text-muted">{contactForm.needsHint}</span>
           </legend>
           <div className="mt-4 flex flex-wrap gap-2">
-            {needOptions.map((opt) => {
-              const checked = needs.includes(opt.value);
-              return (
-                <label key={opt.value} className="relative cursor-pointer">
-                  <input type="checkbox" name="sujet" value={opt.value} checked={checked} onChange={() => toggleNeed(opt.value)} className="peer sr-only" />
-                  <span
-                    className={cn(
-                      "inline-flex min-h-[44px] items-center gap-2.5 border px-4 py-2 text-sm transition-colors duration-300 ease-editorial peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent",
-                      checked ? "border-accent bg-accent text-paper" : "border-border text-text hover:border-text/50",
-                    )}
-                  >
-                    <span
-                      aria-hidden
-                      className={cn(
-                        "flex h-3.5 w-3.5 shrink-0 items-center justify-center border transition-colors duration-300",
-                        checked ? "border-paper bg-paper" : "border-text/35",
-                      )}
-                    >
-                      {checked ? <span className="h-1.5 w-1.5 bg-accent" /> : null}
-                    </span>
-                    {opt.label}
-                  </span>
-                </label>
-              );
-            })}
+            {needOptions.map((opt) => (
+              <ChoiceChip
+                key={opt.value}
+                name="sujet"
+                value={opt.value}
+                label={opt.label}
+                checked={needs.includes(opt.value)}
+                onToggle={() => toggleNeed(opt.value)}
+              />
+            ))}
           </div>
         </fieldset>
         <FloatingField label={contactForm.fields.site} className="mt-8">
@@ -154,7 +140,7 @@ export function ContactForm({ initialNeeds = [] }: { initialNeeds?: string[] }) 
       </Reveal>
 
       <Reveal as="fieldset" className="min-w-0">
-        <Legend>{contactForm.sections.message}</Legend>
+        <FieldsetLegend>{contactForm.sections.message}</FieldsetLegend>
         <FloatingField
           label={contactForm.fields.message}
           required
@@ -181,82 +167,5 @@ export function ContactForm({ initialNeeds = [] }: { initialNeeds?: string[] }) 
         </p>
       </Reveal>
     </form>
-  );
-}
-
-function Legend({ children }: { children: ReactNode }) {
-  return <legend className="eyebrow mb-4 w-full border-b border-border pb-3 text-text">{children}</legend>;
-}
-
-type ControlProps = {
-  id: string;
-  placeholder: string;
-  required?: boolean;
-  "aria-invalid"?: boolean;
-  "aria-describedby"?: string;
-  className: string;
-};
-
-/** Underlined input whose label floats up on focus or once filled; a green rule draws in on focus. */
-function FloatingField({
-  label,
-  required,
-  error,
-  hint,
-  className,
-  children,
-}: {
-  label: string;
-  required?: boolean;
-  error?: string;
-  hint?: string;
-  className?: string;
-  children: (props: ControlProps) => ReactNode;
-}) {
-  const id = useId();
-  const describedBy = [error ? `${id}-error` : null, hint ? `${id}-hint` : null].filter(Boolean).join(" ") || undefined;
-
-  return (
-    <div className={cn("flex flex-col gap-2", className)}>
-      <div className="relative">
-        {children({
-          id,
-          placeholder: " ",
-          required,
-          "aria-invalid": error ? true : undefined,
-          "aria-describedby": describedBy,
-          className:
-            "peer block w-full border-b border-border bg-transparent pt-7 pb-2.5 text-md text-text outline-none transition-colors duration-300 placeholder:text-transparent hover:border-text/40 focus:border-text/40 focus-visible:outline-none aria-[invalid=true]:border-accent",
-        })}
-        <label
-          htmlFor={id}
-          className="pointer-events-none absolute top-0 left-0 origin-[0_0] translate-y-0 scale-[0.85] text-base text-muted transition-transform duration-300 ease-editorial peer-placeholder-shown:translate-y-7 peer-placeholder-shown:scale-100 peer-focus:translate-y-0 peer-focus:scale-[0.85] peer-focus:text-text"
-        >
-          {label}
-          {required ? (
-            <span aria-hidden className="text-accent">
-              {" "}
-              *
-            </span>
-          ) : null}
-        </label>
-        <span
-          aria-hidden
-          className="pointer-events-none absolute bottom-0 left-0 h-0.5 w-full origin-left scale-x-0 bg-accent transition-transform duration-500 ease-editorial peer-focus:scale-x-100"
-        />
-      </div>
-      {error || hint ? (
-        <div className="flex items-start justify-between gap-4 text-sm">
-          <span id={error ? `${id}-error` : undefined} className="font-medium text-accent">
-            {error}
-          </span>
-          {hint ? (
-            <span id={`${id}-hint`} className="shrink-0 text-xs text-muted">
-              {hint}
-            </span>
-          ) : null}
-        </div>
-      ) : null}
-    </div>
   );
 }

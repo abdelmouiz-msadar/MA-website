@@ -10,6 +10,7 @@ export const primaryNav: NavItem[] = [
   { label: "Maintenance", href: "/maintenance" },
   { label: "Notre approche", href: "/notre-approche" },
   { label: "QSE", href: "/qse" },
+  { label: "Carrières", href: "/carrieres" },
   { label: "Contact", href: "/contact" },
 ];
 

@@ -47,7 +47,7 @@ export function SiteHeader() {
       setMenuOpen(false);
       menuButtonRef.current?.focus();
     };
-    const desktop = window.matchMedia("(min-width: 1024px)");
+    const desktop = window.matchMedia("(min-width: 1280px)");
     const onDesktop = (e: MediaQueryListEvent) => e.matches && setMenuOpen(false);
 
     root.style.overflow = "hidden";
@@ -92,7 +92,7 @@ export function SiteHeader() {
 
           <nav
             aria-label={ui.mainNav}
-            className={cn("hidden lg:flex lg:items-center lg:gap-8 xl:gap-12", solid ? "text-ink" : "text-white")}
+            className={cn("hidden xl:flex xl:items-center xl:gap-10 2xl:gap-12", solid ? "text-ink" : "text-white")}
           >
             {desktopNav.map((item) => {
               const active = isActive(pathname, item.href);
@@ -102,7 +102,7 @@ export function SiteHeader() {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative py-2 text-sm font-bold tracking-wide uppercase transition-colors after:absolute after:bottom-1 after:left-0 after:h-px after:transition-[width] after:duration-300 hover:after:w-full",
+                    "relative py-2 text-sm font-bold tracking-wide whitespace-nowrap uppercase transition-colors after:absolute after:bottom-1 after:left-0 after:h-px after:transition-[width] after:duration-300 hover:after:w-full",
                     solid ? "after:bg-green hover:text-green" : "after:bg-green-bright hover:text-green-bright",
                     active ? cn("after:w-full", solid ? "text-green" : "text-green-bright") : "after:w-0",
                   )}
@@ -120,7 +120,7 @@ export function SiteHeader() {
             aria-expanded={menuOpen}
             aria-controls={MENU_ID}
             aria-label={menuOpen ? ui.closeMenu : ui.openMenu}
-            className={cn("-mr-3 flex min-h-11 items-center gap-2 px-3 lg:hidden", solid ? "text-ink" : "text-white")}
+            className={cn("-mr-3 flex min-h-11 items-center gap-2 px-3 xl:hidden", solid ? "text-ink" : "text-white")}
           >
             <span aria-hidden className="flex w-6 flex-col gap-[5px]">
               <span
@@ -146,7 +146,7 @@ function MobileMenu({ open, pathname, onClose }: { open: boolean; pathname: stri
       id={MENU_ID}
       inert={!open}
       className={cn(
-        "theme-dark fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-background pt-24 pb-8 text-text transition-[clip-path,visibility] duration-600 ease-reveal md:pt-28 lg:hidden",
+        "theme-dark fixed inset-0 z-40 flex flex-col overflow-y-auto overscroll-contain bg-background pt-24 pb-8 text-text transition-[clip-path,visibility] duration-600 ease-reveal md:pt-28 xl:hidden",
         open ? "visible [clip-path:inset(0_0_0_0)]" : "invisible [clip-path:inset(0_0_100%_0)]",
       )}
     >

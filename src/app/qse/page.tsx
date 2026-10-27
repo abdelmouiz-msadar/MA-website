@@ -5,7 +5,7 @@ import { PageHero } from "@/components/sections/page-hero";
 import { Container } from "@/components/ui/container";
 import { Eyebrow, SectionHeader } from "@/components/ui/heading";
 import { Reveal } from "@/components/ui/reveal";
-import { contactHero } from "@/lib/content/contact";
+import { careersHero } from "@/lib/content/careers";
 import { primaryNav } from "@/lib/content/navigation";
 import { qseCertificates, qseCertifiedBy, qseCommitment, qseHero } from "@/lib/content/qse";
 import { routes } from "@/lib/content/routes";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     "Qualité, sécurité, environnement : le système de management intégré de Maintenance Assistance Plus, certifié ISO 9001, ISO 45001 et ISO 14001 par Bureau Veritas.",
 };
 
-const contactLabel = primaryNav.find((item) => item.href === routes.contact)?.label ?? "";
+const careersLabel = primaryNav.find((item) => item.href === routes.careers)?.label ?? "";
 
 export default function QsePage() {
   return (
@@ -79,7 +79,7 @@ export default function QsePage() {
         </Container>
       </section>
 
-      <NextPage href={routes.contact} label={contactLabel} image={contactHero.image} />
+      <NextPage href={routes.careers} label={careersLabel} image={careersHero.image} />
     </>
   );
 }
